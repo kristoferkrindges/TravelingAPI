@@ -1,11 +1,16 @@
 package com.kristofer.traveling.services;
 
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.services.JwtService;
+import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.controllers.user.requests.AuthenticationRequest;
 import com.kristofer.traveling.controllers.user.requests.RegisterRequest;
 import com.kristofer.traveling.controllers.user.responses.AuthenticationResponse;
@@ -28,7 +33,8 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     
     public AuthenticationResponse register(RegisterRequest request){
-        // Validate email exists;
+        //this.verifyEmailExists(request.getEmail());
+        //this.verifyAtExists(request.getAt());
         var user = UserModel.builder()
             .firstname(request.getFirstname())
             .lastname(request.getLastname())
@@ -53,12 +59,35 @@ public class AuthenticationService {
                 request.getEmail(), request.getPassword()
             )
         );
-        var user = userRepository.findByEmail(request.getEmail())
+        var user = this.findByEmail(request.getEmail())
             .orElseThrow();
         //Duplicated
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
             .token(jwtToken)
             .build();
+    }
+
+    private void verifyEmailExists(String email){
+        System.out.println(this.findByEmail(email));
+        if(this.findByEmail(email) != null){
+            throw new ObjectAlreadyExistsException(
+                "Email already registered in the system");
+        }
+    }
+
+    private void verifyAtExists(String at){
+        if(this.findByAt(at) != null){
+            throw new ObjectAlreadyExistsException(
+                "At already registered in the system");
+        }
+    }
+
+    public Optional<UserModel> findByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
+    public Optional<UserModel> findByAt(String at){
+        return userRepository.findByAt(at);
     }
 }
