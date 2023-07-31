@@ -5,26 +5,24 @@ import com.kristofer.traveling.models.UserModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
-
-public class UserAllResponse {
-    private Integer id;
+public class UserCheckResponse {
     private String firstname;
     private String lastname;
+    private String email;
     private String at;
 
-    public UserAllResponse(UserModel userModel){
-        this.id = userModel.getId();
+    public UserCheckResponse(UserModel userModel){
         this.firstname = userModel.getFirstname();
         this.lastname = userModel.getLastname();
+        this.email = userModel.getEmail();
         this.at = userModel.getAt();
     }
 
-    public UserAllResponse(){
+    public UserCheckResponse(){
 
     }
 }

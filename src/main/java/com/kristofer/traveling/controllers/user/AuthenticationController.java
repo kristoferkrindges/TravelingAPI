@@ -22,17 +22,8 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegisterRequest request){
-        System.out.println(authenticationService.findByEmail(request.getEmail()));
-        if(!authenticationService.findByEmail(request.getEmail()).isPresent()){
-            if(!authenticationService.findByAt(request.getAt()).isPresent()){
-                return ResponseEntity.ok(authenticationService.register(request));
-            }else{
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("At already exists");
-            }
-        }else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Email already exists");
-        }
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
+        return ResponseEntity.ok(authenticationService.register(request));
         
     }
     @PostMapping("/authenticate")
