@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
+import com.kristofer.traveling.services.exceptions.PasswordsNotSame;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -49,6 +50,14 @@ public class ResourceExceptionHandler {
         HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError err = new StandardError(System.currentTimeMillis(), 
         status.value(),"Token invalid: ", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+    @ExceptionHandler(PasswordsNotSame.class)
+    public ResponseEntity<StandardError> 
+    passwordNotSame(PasswordsNotSame e, HttpServletRequest request){
+        HttpStatus status = HttpStatus.CONFLICT;
+        StandardError err = new StandardError(System.currentTimeMillis(), 
+        status.value(),"Passwords: ", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }

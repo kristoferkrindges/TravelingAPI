@@ -6,8 +6,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.kristofer.traveling.controllers.user.requests.PasswordsRequest;
 import com.kristofer.traveling.controllers.user.requests.UserUpdateRequest;
 import com.kristofer.traveling.controllers.user.responses.UserAllResponse;
 import com.kristofer.traveling.models.UserModel;
@@ -16,6 +19,7 @@ import com.kristofer.traveling.services.exceptions.DatabaseException;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
+import com.kristofer.traveling.services.exceptions.PasswordsNotSame;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +28,12 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
+
     private final JwtService jwtService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public List<UserAllResponse> findAll(){
         List<UserModel> users = userRepository.findAll();
@@ -37,6 +46,11 @@ public class UserService {
         Optional<UserModel> obj = userRepository.findById(id);
         return obj.orElseThrow(
             ()-> new ObjectNotFoundException("User with id " + id + " not found"));
+    }
+
+    public UserModel checkUser(String token){
+        UserModel user = userByToken(token);
+        return user;
     }
 
     public void update(String token, UserUpdateRequest request){
@@ -56,6 +70,20 @@ public class UserService {
         }catch(DataIntegrityViolationException e){
             throw new DatabaseException(e.getMessage());
         }
+    }
+
+    public void updatePassword(String token, PasswordsRequest obj){
+        UserModel user = userByToken(token);
+        if(!this.verifyPasswordEncoder(user.getPassword(), obj.getPassword())){
+            throw new PasswordsNotSame("Passwords are not the same");
+        }
+        String newPassword = passwordEncoder.encode(obj.getNewpassword());
+        user.setPassword(newPassword);
+        userRepository.save(user);
+    }
+
+    private boolean verifyPasswordEncoder(String passwordDB, String passwordRequest){
+        return bCryptPasswordEncoder.matches(passwordRequest, passwordDB);
     }
 
     private UserModel userByToken(String token){
