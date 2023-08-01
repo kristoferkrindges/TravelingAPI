@@ -42,7 +42,7 @@ public class UserService {
         return userAllResponse;
     }
 
-    public UserModel findById(Integer id){
+    public UserModel findById(Long id){
         Optional<UserModel> obj = userRepository.findById(id);
         return obj.orElseThrow(
             ()-> new ObjectNotFoundException("User with id " + id + " not found"));

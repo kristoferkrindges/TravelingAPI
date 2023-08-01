@@ -13,7 +13,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class UserCheckResponse {
-    private Integer id;
+    private Long id;
     private String firstname;
     private String lastname;
     private String email;

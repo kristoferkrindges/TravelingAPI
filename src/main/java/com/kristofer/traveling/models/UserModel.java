@@ -4,13 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -26,11 +29,11 @@ import com.kristofer.traveling.models.Enums.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="userTable")
+@Table(name="user_table")
 public class UserModel implements UserDetails{
     @Id
-    @GeneratedValue
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String firstname;
     private String lastname;
     private String email;
@@ -41,6 +44,14 @@ public class UserModel implements UserDetails{
     private Date birthdate;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(mappedBy = "creator")
+    private List<PostModel> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "follower")
+    private List<FollowerModel> followers = new ArrayList<>();
+    @OneToMany(mappedBy = "following")
+    private List<FollowingModel> following = new ArrayList<>();
+    //@OneToMany(mappedBy = "creator")
+    //private List<StorieModel> stories = new ArrayList<>();
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -11,7 +11,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class UserAllResponse {
-    private Integer id;
+    private Long id;
     private String firstname;
     private String lastname;
     private String at;
