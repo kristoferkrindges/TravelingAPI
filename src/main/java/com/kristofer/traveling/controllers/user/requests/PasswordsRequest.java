@@ -1,5 +1,4 @@
 package com.kristofer.traveling.controllers.user.requests;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +8,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
-    private String email;
-    // verify
+public class PasswordsRequest {
     private String password;
+    private String newpassword;
 }
