@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
+import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
 import com.kristofer.traveling.services.exceptions.PasswordsNotSame;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,6 +59,15 @@ public class ResourceExceptionHandler {
         HttpStatus status = HttpStatus.CONFLICT;
         StandardError err = new StandardError(System.currentTimeMillis(), 
         status.value(),"Passwords: ", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(ObjectNotPermission.class)
+    public ResponseEntity<StandardError> 
+    objectNotPermission(ObjectNotPermission e, HttpServletRequest request){
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        StandardError err = new StandardError(System.currentTimeMillis(), 
+        status.value(),"Forbidden: ", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }

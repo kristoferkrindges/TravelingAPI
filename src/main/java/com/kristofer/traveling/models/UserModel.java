@@ -50,8 +50,8 @@ public class UserModel implements UserDetails{
     private List<FollowerModel> followers = new ArrayList<>();
     @OneToMany(mappedBy = "following")
     private List<FollowingModel> following = new ArrayList<>();
-    //@OneToMany(mappedBy = "creator")
-    //private List<StorieModel> stories = new ArrayList<>();
+    @OneToMany(mappedBy = "creator")
+    private List<StorieModel> stories = new ArrayList<>();
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

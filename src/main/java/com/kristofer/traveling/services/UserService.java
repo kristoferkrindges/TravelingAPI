@@ -86,7 +86,7 @@ public class UserService {
         return bCryptPasswordEncoder.matches(passwordRequest, passwordDB);
     }
 
-    private UserModel userByToken(String token){
+    public UserModel userByToken(String token){
         final String replaceToken = token.replace("Bearer ", "");
         final String userEmail = jwtService.extractUsername(replaceToken);
         Optional<UserModel> user = userRepository.findByEmail(userEmail);
