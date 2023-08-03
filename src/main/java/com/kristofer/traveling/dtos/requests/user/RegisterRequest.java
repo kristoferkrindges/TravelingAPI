@@ -1,4 +1,4 @@
-package com.kristofer.traveling.controllers.user.requests;
+package com.kristofer.traveling.dtos.requests.user;
 
 import java.util.Date;
 

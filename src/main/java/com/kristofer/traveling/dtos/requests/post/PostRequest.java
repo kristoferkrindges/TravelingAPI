@@ -1,4 +1,4 @@
-package com.kristofer.traveling.controllers.user.requests;
+package com.kristofer.traveling.dtos.requests.post;
 
 import java.util.Date;
 
@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StorieRequest {
-    private String video;
+public class PostRequest {
+    private String img;
+    private String phrase;
     private Date datePublic;
-    private Long cretorId;
+    private Long creatorId;
 }

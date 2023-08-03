@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.kristofer.traveling.controllers.user.requests.StorieRequest;
-import com.kristofer.traveling.controllers.user.responses.StorieAllResponse;
+import com.kristofer.traveling.dtos.requests.storie.StorieRequest;
+import com.kristofer.traveling.dtos.responses.storie.StorieAllResponse;
 import com.kristofer.traveling.models.StorieModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.StorieRepository;
@@ -42,24 +42,26 @@ public class StorieService {
         return new StorieAllResponse(storie);
     }
 
-    public void update(String token, StorieRequest request, Long id){
+    public StorieAllResponse update(String token, StorieRequest request, Long id){
         StorieModel storie = this.updateDataStorie(token, request, id);
         storieRepository.save(storie);
+        return new StorieAllResponse(storie);
     }
 
-    public void delete(String token, Long id){
+    public String delete(String token, Long id){
         StorieModel storieModel = this.findStorie(id);
-        this.verifyIdUser(token, id);
+        this.verifyIdUser(token, storieModel.getCreator().getId());
         this.storieRepository.delete(storieModel);
+        return "Delete with sucess!";
     }
 
     private StorieModel updateDataStorie(String token, StorieRequest request, Long id){
+        StorieModel storieModel = this.verifyStorieExistId(id);
         this.verifyRequestUpdate(request);
-        this.verifyIdUser(token, request.getCretorId());
-        Optional<StorieModel> storieModel = storieRepository.findById(id);
-        storieModel.get().setVideo(request.getVideo());
-        storieModel.get().setDatePublic(request.getDatePublic());
-        return storieModel.get(); 
+        this.verifyIdUser(token, request.getCreatorId());
+        storieModel.setVideo(request.getVideo());
+        storieModel.setDatePublic(request.getDatePublic());
+        return storieModel;
     }
 
     private void verifyIdUser(String token, Long id){
@@ -75,6 +77,12 @@ public class StorieService {
             throw new ObjectNotFoundException("Storie with id " + id + " not found");
         }
         return storieModel.get();
+    }
+
+    private StorieModel verifyStorieExistId(Long id){
+        Optional<StorieModel> storie = storieRepository.findById(id);
+        return storie.orElseThrow(
+            ()-> new ObjectNotFoundException("Storie with id " + id + " not found"));
     }
 
     private StorieModel createdStorieModel(String token, StorieRequest request){
@@ -104,7 +112,7 @@ public class StorieService {
         if(request.getDatePublic() == null){
             throw new ObjectNotNullException("DatePublic: DatePublic is required.");
         }
-        if(request.getCretorId() == null){
+        if(request.getCreatorId() == null){
             throw new ObjectNotNullException("Creator ID: Creator ID is required.");
         }
     }

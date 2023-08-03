@@ -1,4 +1,4 @@
-package com.kristofer.traveling.controllers.user.responses;
+package com.kristofer.traveling.dtos.responses.user;
 
 import com.kristofer.traveling.models.UserModel;
 

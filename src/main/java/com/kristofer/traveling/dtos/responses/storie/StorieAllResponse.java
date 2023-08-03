@@ -1,7 +1,8 @@
-package com.kristofer.traveling.controllers.user.responses;
+package com.kristofer.traveling.dtos.responses.storie;
 
 import java.util.Date;
 
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.StorieModel;
 
 import lombok.AllArgsConstructor;

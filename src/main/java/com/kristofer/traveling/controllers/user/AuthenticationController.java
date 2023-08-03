@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kristofer.traveling.controllers.user.requests.AuthenticationRequest;
-import com.kristofer.traveling.controllers.user.requests.RegisterRequest;
-import com.kristofer.traveling.controllers.user.responses.AuthenticationResponse;
+import com.kristofer.traveling.dtos.requests.user.AuthenticationRequest;
+import com.kristofer.traveling.dtos.requests.user.RegisterRequest;
+import com.kristofer.traveling.dtos.responses.user.AuthenticationResponse;
 import com.kristofer.traveling.services.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;

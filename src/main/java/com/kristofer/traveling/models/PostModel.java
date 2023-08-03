@@ -33,8 +33,8 @@ public class PostModel {
     @ManyToOne
     @JoinColumn(name="creator_id")
     private UserModel creator;
-    // private List<Likes> likes = new ArrayList<>();
-    // private List<Favs> favs = new ArrayList<>();
+    //private List<Likes> likes = new ArrayList<>();
+    //private List<Favs> favs = new ArrayList<>();
     //private List<CommentModel> comments = new ArrayList<>();
     private Date datePublic;
 }
