@@ -1,4 +1,4 @@
-package com.kristofer.traveling.controllers.user.responses;
+package com.kristofer.traveling.dtos.responses.user;
 
 import java.util.Date;
 
@@ -21,6 +21,9 @@ public class UserCheckResponse {
     private String photo;
     private String banner;
     private Date birthdate;
+    private Integer posts;
+    private Integer followers;
+    private Integer followings;
 
     public UserCheckResponse(UserModel userModel){
         this.id = userModel.getId();
@@ -31,6 +34,9 @@ public class UserCheckResponse {
         this.photo = userModel.getPhoto();
         this.banner = userModel.getBanner();
         this.birthdate = userModel.getBirthdate();
+        this.posts = userModel.getPosts().size();
+        this.followers = userModel.getFollowers().size();
+        this.followings = userModel.getFollowing().size();
     }
 
     public UserCheckResponse(){

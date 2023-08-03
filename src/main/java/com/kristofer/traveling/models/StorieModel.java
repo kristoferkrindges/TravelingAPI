@@ -1,8 +1,6 @@
 package com.kristofer.traveling.models;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,25 +14,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="post_table")
-public class PostModel {
+@Table(name="storie_table")
+public class StorieModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String phrase;
-    private String img;
+    private String video;
+    private Date datePublic;
     @ManyToOne
     @JoinColumn(name="creator_id")
     private UserModel creator;
-    //private List<Likes> likes = new ArrayList<>();
-    //private List<Favs> favs = new ArrayList<>();
-    //private List<CommentModel> comments = new ArrayList<>();
-    private Date datePublic;
 }

@@ -22,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kristofer.traveling.models.Enums.Role;
 
 @Data
@@ -44,14 +45,15 @@ public class UserModel implements UserDetails{
     private Date birthdate;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @JsonIgnore
     @OneToMany(mappedBy = "creator")
     private List<PostModel> posts = new ArrayList<>();
     @OneToMany(mappedBy = "follower")
     private List<FollowerModel> followers = new ArrayList<>();
     @OneToMany(mappedBy = "following")
     private List<FollowingModel> following = new ArrayList<>();
-    //@OneToMany(mappedBy = "creator")
-    //private List<StorieModel> stories = new ArrayList<>();
+    @OneToMany(mappedBy = "creator")
+    private List<StorieModel> stories = new ArrayList<>();
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

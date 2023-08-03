@@ -10,9 +10,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.kristofer.traveling.controllers.user.requests.PasswordsRequest;
-import com.kristofer.traveling.controllers.user.requests.UserUpdateRequest;
-import com.kristofer.traveling.controllers.user.responses.UserAllResponse;
+import com.kristofer.traveling.dtos.requests.user.PasswordsRequest;
+import com.kristofer.traveling.dtos.requests.user.UserUpdateRequest;
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.UserRepository;
 import com.kristofer.traveling.services.exceptions.DatabaseException;
@@ -86,7 +86,7 @@ public class UserService {
         return bCryptPasswordEncoder.matches(passwordRequest, passwordDB);
     }
 
-    private UserModel userByToken(String token){
+    public UserModel userByToken(String token){
         final String replaceToken = token.replace("Bearer ", "");
         final String userEmail = jwtService.extractUsername(replaceToken);
         Optional<UserModel> user = userRepository.findByEmail(userEmail);
