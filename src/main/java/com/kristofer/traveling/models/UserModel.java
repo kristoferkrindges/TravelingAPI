@@ -48,10 +48,13 @@ public class UserModel implements UserDetails{
     @JsonIgnore
     @OneToMany(mappedBy = "creator")
     private List<PostModel> posts = new ArrayList<>();
+    @JsonIgnore
     @OneToMany(mappedBy = "follower")
     private List<FollowerModel> followers = new ArrayList<>();
+    @JsonIgnore
     @OneToMany(mappedBy = "following")
     private List<FollowingModel> following = new ArrayList<>();
+    @JsonIgnore
     @OneToMany(mappedBy = "creator")
     private List<StorieModel> stories = new ArrayList<>();
     
