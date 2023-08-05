@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.FollowerModel;
-import com.kristofer.traveling.models.FollowingModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowerRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
@@ -24,12 +24,12 @@ public class FollowerService {
         return followerRepository.findAll();
     }
 
-    public List<UserModel> getFollowersUser(Long userId){
-        List<UserModel> followers = new ArrayList<>();
+    public List<UserAllResponse> getFollowersUser(Long userId){
+        List<UserAllResponse> followers = new ArrayList<>();
         List<FollowerModel> followerRelation = followerRepository.findByFollowingId(userId);
-        // for(FollowerModel followerRelation : followerRelations){
-
-        // }
+        for(FollowerModel followerRelations : followerRelation){
+            followers.add(new UserAllResponse(followerRelations.getFollower()));
+        }
         return followers;
     }
 
@@ -38,7 +38,16 @@ public class FollowerService {
         return;
     }
 
-    public void delete(Long follower_id, Long following_id){
+    public String delete(Long follower, Long following){
+        return this.deleteFollowing(follower, following);
+    }
+
+    private String deleteFollowing(Long follower, Long following) {
+        this.deleteFollower(follower, following);
+        return "Delete with sucess!";
+    }
+
+    public void deleteFollower(Long follower_id, Long following_id){
         FollowerModel follower = this.findFollower(follower_id, following_id);
         followerRepository.delete(follower);
         return;
@@ -46,8 +55,8 @@ public class FollowerService {
 
     private void createdFollowerData(UserModel follower, UserModel following) {
         var followerRelation = FollowerModel.builder()
-            .follower(follower)
-            .following(following)
+            .follower(following)
+            .following(follower)
             .build();
         followerRepository.save(followerRelation);
         return;

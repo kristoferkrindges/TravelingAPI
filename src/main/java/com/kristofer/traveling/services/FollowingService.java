@@ -3,10 +3,10 @@ package com.kristofer.traveling.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.FollowingModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowingRepository;
@@ -18,33 +18,38 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FollowingService {
     private final FollowingRepository followingRepository;
-    private final UserService userService;
-    private final FollowerService followerService;
 
     public List<FollowingModel> findAll(){
         return followingRepository.findAll();
     }
 
-    public List<UserModel> getFollowingsUser(){
-        List<UserModel> followings = new ArrayList<>();
+    public List<UserAllResponse> getFollowingsUser(Long userId){
+        List<UserAllResponse> followings = new ArrayList<>();
+        List<FollowingModel> followingRelation = followingRepository.findByFollowerId(userId);
+        for(FollowingModel followingRelations : followingRelation){
+            followings.add(new UserAllResponse(followingRelations.getFollowing()));
+        }
         return followings;
     }
 
-    public FollowingModel insert(String token, Long following_id){
-        return this.createdFollowingData(token, following_id);
+    public FollowingModel insert(UserModel follower, UserModel following){
+        return this.createdFollowingData(follower, following);
     }
 
-    public String delete(String token, Long following_id){
-        return this.deleteBothTables(token, following_id);
+    public String delete(Long follower, Long following){
+        return this.deleteBothTables(follower, following);
     }
     
-    private String deleteBothTables(String token, Long following_id) {
-        UserModel followerUser = userService.userByToken(token);
-        FollowingModel following = this.findFollowing(followerUser.getId(), following_id);
-        followingRepository.delete(following);
-        this.followerService.delete(followerUser.getId(), following_id);
+    private String deleteBothTables(Long follower, Long following) {
+        this.deleteFollowing(follower, following);
         return "Deleted with sucess!";
 
+    }
+
+    public void deleteFollowing(Long follower_id, Long following_id){
+        FollowingModel following = this.findFollowing(follower_id, following_id);
+        followingRepository.delete(following);
+        return;
     }
 
     private FollowingModel findFollowing(Long follower_id, Long following_id) {
@@ -53,15 +58,12 @@ public class FollowingService {
         
     }
 
-    private FollowingModel createdFollowingData(String token, Long following_id) {
-        UserModel follower = userService.userByToken(token);
-        UserModel following = userService.findById(following_id);
+    private FollowingModel createdFollowingData(UserModel follower, UserModel following) {
         var followingRelation = FollowingModel.builder()
-            .follower(follower)
-            .following(following)
+            .follower(following)
+            .following(follower)
             .build();
         followingRepository.save(followingRelation);
-        followerService.insert(follower, following);
         return followingRelation;
     }
 }
