@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.post.PostRequest;
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.PostRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
+import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,8 @@ public class PostService {
     private final PostRepository postRepository;
 
     private final UserService userService;
+    private final LikeService likeService;
+    private final FavoriteService favoriteService;
 
     public List<PostAllResponse> findAll(){
         List<PostModel> posts = postRepository.findAll();
@@ -54,6 +58,20 @@ public class PostService {
         this.verifyIdUser(token, postModel.getCreator().getId());
         this.postRepository.delete(postModel);
         return "Delete with sucess!";
+    }
+
+    public PostModel findByIdPost(Long postId){
+        return this.findPost(postId);
+    }
+
+    public List<UserAllResponse> allLikesPost(Long postId){
+        PostModel post = this.findByIdPost(postId);
+        return likeService.getLikedPostUsers(post);
+    }
+
+    public List<UserAllResponse> allFavoritesPost(Long postId){
+        PostModel post = this.findByIdPost(postId);
+        return favoriteService.getFavoritePostUsers(post);
     }
 
     private PostModel updateDataPost(String token, PostRequest request, Long id){

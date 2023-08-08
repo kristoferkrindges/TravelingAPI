@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kristofer.traveling.dtos.requests.user.AuthenticationRequest;
 import com.kristofer.traveling.dtos.requests.user.RegisterRequest;
 import com.kristofer.traveling.dtos.responses.user.AuthenticationResponse;
-import com.kristofer.traveling.services.AuthenticationService;
+import com.kristofer.traveling.services.users.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
 

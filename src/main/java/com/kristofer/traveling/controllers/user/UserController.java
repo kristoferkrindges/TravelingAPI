@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kristofer.traveling.dtos.requests.user.PasswordsRequest;
 import com.kristofer.traveling.dtos.requests.user.UserUpdateRequest;
+import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserCheckResponse;
 import com.kristofer.traveling.models.UserModel;
-import com.kristofer.traveling.services.UserInteractionService;
-import com.kristofer.traveling.services.UserService;
+import com.kristofer.traveling.services.users.UserInteractionService;
+import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -87,9 +88,31 @@ public class UserController {
     public ResponseEntity<List<UserAllResponse>> findFollowingsUser(@PathVariable Long id){
         return ResponseEntity.ok().body(userInteractionService.getFollowersOfUser(id)); 
     }
+
     @PostMapping("/{id}/removefollow")
-    public ResponseEntity<String> removeFollow(@PathVariable("id") Long followingId, @RequestHeader("token") String token) {
-        userInteractionService.removeFollow(token, followingId);
+    public ResponseEntity<String> removeFollow(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader) {
+        userInteractionService.removeFollow(authorizationHeader, followingId);
         return ResponseEntity.ok("Successfully remove Follow!");
+    }
+
+    @PostMapping("/like/{id}")
+    public ResponseEntity<String> toggleLike(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader){
+        userInteractionService.toggleToLike(authorizationHeader, followingId);
+        return ResponseEntity.ok("Successfully like post!");
+    }
+
+    @PostMapping("/favorites/{id}")
+    public ResponseEntity<String> toggleFavorite(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader){
+        userInteractionService.toggleFavorite(authorizationHeader, followingId);
+        return ResponseEntity.ok("Successfully favorite post!");
+    }
+
+    @GetMapping(value = "/like")
+    public ResponseEntity<List<PostAllResponse>> allLikes(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.allLikesUser(authorizationHeader)); 
+    }
+    @GetMapping(value = "/favorites")
+    public ResponseEntity<List<PostAllResponse>> allFavorites(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.allFavoritesUser(authorizationHeader)); 
     }
 }

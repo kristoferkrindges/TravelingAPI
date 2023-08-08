@@ -24,6 +24,8 @@ public class UserCheckResponse {
     private Integer posts;
     private Integer followers;
     private Integer followings;
+    private Integer favorites;
+    private Integer likes;
 
     public UserCheckResponse(UserModel userModel){
         this.id = userModel.getId();
@@ -37,6 +39,8 @@ public class UserCheckResponse {
         this.posts = userModel.getPosts().size();
         this.followers = userModel.getFollowers().size();
         this.followings = userModel.getFollowing().size();
+        this.favorites = userModel.getFavorites().size();
+        this.likes = userModel.getLikes().size();
     }
 
     public UserCheckResponse(){

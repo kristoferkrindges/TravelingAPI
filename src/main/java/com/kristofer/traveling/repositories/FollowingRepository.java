@@ -6,8 +6,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kristofer.traveling.models.FollowingModel;
+import com.kristofer.traveling.models.UserModel;
 
 public interface FollowingRepository extends JpaRepository<FollowingModel,  Long> {
-    Optional<FollowingModel> findByFollowingAndFollowerId(Long follower_id, Long following_id);
+    Optional<FollowingModel> findByFollowerAndFollowing(UserModel follower, UserModel following);
     List<FollowingModel> findByFollowerId(Long userId);
 }

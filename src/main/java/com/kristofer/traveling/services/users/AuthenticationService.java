@@ -1,4 +1,4 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.users;
 
 import java.util.Optional;
 
