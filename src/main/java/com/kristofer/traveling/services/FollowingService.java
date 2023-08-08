@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.models.FollowerModel;
 import com.kristofer.traveling.models.FollowingModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowingRepository;
@@ -36,25 +37,25 @@ public class FollowingService {
         return this.createdFollowingData(follower, following);
     }
 
-    public String delete(Long follower, Long following){
+    public String delete(UserModel follower, UserModel following){
         return this.deleteBothTables(follower, following);
     }
     
-    private String deleteBothTables(Long follower, Long following) {
+    private String deleteBothTables(UserModel follower, UserModel following) {
         this.deleteFollowing(follower, following);
         return "Deleted with sucess!";
 
     }
 
-    public void deleteFollowing(Long follower_id, Long following_id){
-        FollowingModel following = this.findFollowing(follower_id, following_id);
-        followingRepository.delete(following);
+    public void deleteFollowing(UserModel follower, UserModel following){
+        FollowingModel followingModel = this.findFollowing(follower, following);
+        followingRepository.delete(followingModel);
         return;
     }
 
-    private FollowingModel findFollowing(Long follower_id, Long following_id) {
-        Optional<FollowingModel> following = followingRepository.findByFollowingAndFollowerId(following_id, follower_id);
-        return following.orElseThrow(() -> new ObjectNotFoundException("Following not found!"));
+    private FollowingModel findFollowing(UserModel follower, UserModel following) {
+        Optional<FollowingModel> followingModel = followingRepository.findByFollowerAndFollowing(following, follower);
+        return followingModel.orElseThrow(() -> new ObjectNotFoundException("Follower not found!"));
         
     }
 

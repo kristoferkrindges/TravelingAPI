@@ -14,6 +14,7 @@ import com.kristofer.traveling.repositories.StorieRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
+import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
 

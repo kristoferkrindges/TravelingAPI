@@ -57,6 +57,12 @@ public class UserModel implements UserDetails{
     @JsonIgnore
     @OneToMany(mappedBy = "creator")
     private List<StorieModel> stories = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<FavoriteModel> favorites = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<LikeModel> likes = new ArrayList<>();
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,4 +1,4 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.users;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +15,7 @@ import com.kristofer.traveling.dtos.requests.user.UserUpdateRequest;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.UserRepository;
+import com.kristofer.traveling.services.JwtService;
 import com.kristofer.traveling.services.exceptions.DatabaseException;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;

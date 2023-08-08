@@ -38,18 +38,18 @@ public class FollowerService {
         return;
     }
 
-    public String delete(Long follower, Long following){
+    public String delete(UserModel follower, UserModel following){
         return this.deleteFollowing(follower, following);
     }
 
-    private String deleteFollowing(Long follower, Long following) {
+    private String deleteFollowing(UserModel follower, UserModel following) {
         this.deleteFollower(follower, following);
         return "Delete with sucess!";
     }
 
-    public void deleteFollower(Long follower_id, Long following_id){
-        FollowerModel follower = this.findFollower(follower_id, following_id);
-        followerRepository.delete(follower);
+    public void deleteFollower(UserModel follower, UserModel following){
+        FollowerModel followerModel = this.findFollower(follower, following);
+        followerRepository.delete(followerModel);
         return;
     }
 
@@ -62,8 +62,8 @@ public class FollowerService {
         return;
     }
 
-    private FollowerModel findFollower(Long follower_id, Long following_id) {
-        Optional<FollowerModel> follower = followerRepository.findByFollowingAndFollowerId(follower_id, following_id);
-        return follower.orElseThrow(() -> new ObjectNotFoundException("Follower not found!"));
+    private FollowerModel findFollower(UserModel follower, UserModel following) {
+        Optional<FollowerModel> followerModel = followerRepository.findByFollowerAndFollowing(following, follower);
+        return followerModel.orElseThrow(() -> new ObjectNotFoundException("Follower not found!"));
     }
 }
