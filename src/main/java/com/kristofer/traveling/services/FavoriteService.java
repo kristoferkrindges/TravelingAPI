@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
-    private final ModelMapper modelMapper;
 
     public void toggleFavorite(UserModel user, PostModel post){
         Optional<FavoriteModel> existingFavorite = favoriteRepository.findByUserAndPost(user, post);
@@ -41,9 +39,6 @@ public class FavoriteService {
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
         .collect(Collectors.toList());
         return postAllResponse;
-        // return favorites.stream()
-        //     .map(favorite -> modelMapper.map(favorite.getPost(), PostAllResponse.class))
-        //     .collect(Collectors.toList());
     }
 
     public List<UserAllResponse> getFavoritePostUsers(PostModel post){
@@ -52,8 +47,5 @@ public class FavoriteService {
         List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x))
         .collect(Collectors.toList());
         return usersAllResponse;
-        // return favorites.stream()
-        //     .map(favorite -> modelMapper.map(favorite.getUser(), UserAllResponse.class))
-        //     .collect(Collectors.toList());
     }
 }

@@ -28,4 +28,7 @@ public class LikeModel {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private PostModel post;
+    @ManyToOne
+    @JoinColumn(name = "comment_id")
+    private CommentModel comment;
 }

@@ -77,7 +77,7 @@ public class PostService {
     private PostModel updateDataPost(String token, PostRequest request, Long id){
         PostModel postModel = this.verifyPostExistId(id);
         this.verifyRequestUpdate(request);
-        this.verifyIdUser(token, request.getCreatorId());
+        this.verifyIdUser(token, postModel.getCreator().getId());
         postModel.setImg(request.getImg());
         postModel.setPhrase(request.getPhrase());
         postModel.setDatePublic(request.getDatePublic());
@@ -114,9 +114,6 @@ public class PostService {
     private void verifyRequestUpdate(PostRequest request){
         if(request.getDatePublic() == null){
             throw new ObjectNotNullException("DatePublic: DatePublic is required.");
-        }
-        if(request.getCreatorId() == null){
-            throw new ObjectNotNullException("Creator ID: Creator ID is required.");
         }
     }
 

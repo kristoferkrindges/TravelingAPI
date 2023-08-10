@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,15 +20,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="post_table")
-public class PostModel {
+@Table(name="comment_table")
+public class CommentModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,13 +36,17 @@ public class PostModel {
     @JoinColumn(name="creator_id")
     private UserModel creator;
     @JsonIgnore
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @ManyToOne
+    @JoinColumn(name="post_id")
+    private PostModel post;
+    @JsonIgnore
+    @OneToMany(mappedBy = "comment")
     private List<LikeModel> likes = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    private CommentModel parentComment;
     @JsonIgnore
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<FavoriteModel> favorites = new ArrayList<>();
-    @JsonIgnore
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<CommentModel> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<CommentModel> childComments = new ArrayList<>();
     private Date datePublic;
 }

@@ -1,5 +1,6 @@
 package com.kristofer.traveling.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -46,19 +47,19 @@ public class UserModel implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
     @JsonIgnore
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostModel> posts = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "follower")
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<FollowerModel> followers = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "following")
+    @OneToMany(mappedBy = "following", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<FollowingModel> following = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<StorieModel> stories = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<FavoriteModel> favorites = new ArrayList<>();
     @JsonIgnore
     @OneToMany(mappedBy = "user")
