@@ -50,12 +50,12 @@ public class PostController {
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
         return ResponseEntity.ok().body(postService.delete(authorizationHeader, id));
     }
-    @GetMapping(value = "/like")
-    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long followingId){
-        return ResponseEntity.ok().body(postService.allLikesPost(followingId)); 
+    @GetMapping(value = "/like/{id}")
+    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long postId){
+        return ResponseEntity.ok().body(postService.allLikesPost(postId)); 
     }
-    @GetMapping(value = "/favorites")
-    public ResponseEntity<List<UserAllResponse>> allFavorites(@PathVariable("id") Long followingId){
-        return ResponseEntity.ok().body(postService.allFavoritesPost(followingId)); 
+    @GetMapping(value = "/favorites/{id}")
+    public ResponseEntity<List<UserAllResponse>> allFavorites(@PathVariable("id") Long postId){
+        return ResponseEntity.ok().body(postService.allFavoritesPost(postId)); 
     }
 }

@@ -18,6 +18,9 @@ public class PostAllResponse {
     private String img;
     private Date datepublic;
     private UserAllResponse userAllResponse;
+    private Integer likes;
+    private Integer comments;
+    private Integer favorites;
 
     public PostAllResponse(PostModel post){
         this.id = post.getId();
@@ -25,5 +28,9 @@ public class PostAllResponse {
         this.img = post.getImg();
         this.datepublic = post.getDatePublic();
         this.userAllResponse = new UserAllResponse(post.getCreator());
+        this.likes = post.getLikes() != null ? post.getLikes().size() : 0;
+        this.comments = post.getComments() != null ? post.getComments().size() : 0;
+        this.favorites = post.getFavorites() != null ? post.getFavorites().size() : 0;
+
     }
 }

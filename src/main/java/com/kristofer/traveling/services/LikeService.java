@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LikeService {
     private final LikeRepository likeRepository;
-    private final ModelMapper modelMapper;
 
     public void toggleLike(UserModel user, PostModel post){
         Optional<LikeModel> existingLike = likeRepository.findByUserAndPost(user, post);
@@ -41,9 +39,6 @@ public class LikeService {
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
         .collect(Collectors.toList());
         return postAllResponse;
-        // return likes.stream()
-        //     .map(like -> modelMapper.map(like.getPost(), PostAllResponse.class))
-        //     .collect(Collectors.toList());
     }
 
     public List<UserAllResponse> getLikedPostUsers(PostModel post) {
@@ -52,8 +47,5 @@ public class LikeService {
         List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x))
         .collect(Collectors.toList());
         return usersAllResponse;
-        // return likes.stream()
-        //     .map(like -> modelMapper.map(like.getUser(), UserAllResponse.class))
-        //     .collect(Collectors.toList());
     }
 }

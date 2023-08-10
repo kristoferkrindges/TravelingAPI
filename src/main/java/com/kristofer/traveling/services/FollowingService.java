@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
-import com.kristofer.traveling.models.FollowerModel;
 import com.kristofer.traveling.models.FollowingModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowingRepository;
