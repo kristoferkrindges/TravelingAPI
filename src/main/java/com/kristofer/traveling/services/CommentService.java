@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.comment.CommentRequest;
 import com.kristofer.traveling.dtos.responses.comment.CommentAllResponse;
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.CommentModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
@@ -79,6 +80,17 @@ public class CommentService {
         List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(x))
         .collect(Collectors.toList());
         return commentAllResponse;
+    }
+
+    public void toogleLikeComment(String token, Long commentId){
+        UserModel user = userService.userByToken(token);
+        CommentModel comment = this.verifyCommentExistId(commentId);
+        likeService.toggleLikeComment(user, comment);
+    }
+
+    public List<UserAllResponse> getLikedCommentsUser(Long commentId) {
+        CommentModel comment = this.verifyCommentExistId(commentId);
+        return likeService.getLikedCommentsUser(comment);
     }
 
     private CommentModel updateDataComment(String token, CommentRequest request, Long id) {

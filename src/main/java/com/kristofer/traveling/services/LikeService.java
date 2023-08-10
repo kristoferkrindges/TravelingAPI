@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.models.CommentModel;
 import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
@@ -32,6 +33,19 @@ public class LikeService {
             likeRepository.save(like);
         }
     }
+
+    public void toggleLikeComment(UserModel user, CommentModel comment){
+        Optional<LikeModel> existingLike = likeRepository.findByUserAndComment(user, comment);
+        if (existingLike.isPresent()) {
+            likeRepository.delete(existingLike.get());
+        }else{
+            var like = LikeModel.builder()
+                .user(user)
+                .comment(comment)
+                .build();
+            likeRepository.save(like);
+        }
+    }
     
     public List<PostAllResponse> getLikedUserPosts(UserModel user) {
         List<LikeModel> likes = likeRepository.findByUser(user);
@@ -43,6 +57,14 @@ public class LikeService {
 
     public List<UserAllResponse> getLikedPostUsers(PostModel post) {
         List<LikeModel> likes = likeRepository.findByPost(post);
+        List<UserModel> users = likes.stream().map(LikeModel::getUser).collect(Collectors.toList());
+        List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x))
+        .collect(Collectors.toList());
+        return usersAllResponse;
+    }
+
+    public List<UserAllResponse> getLikedCommentsUser(CommentModel comment) {
+        List<LikeModel> likes = likeRepository.findByComment(comment);
         List<UserModel> users = likes.stream().map(LikeModel::getUser).collect(Collectors.toList());
         List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x))
         .collect(Collectors.toList());

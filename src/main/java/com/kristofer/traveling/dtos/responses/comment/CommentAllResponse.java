@@ -31,7 +31,7 @@ public class CommentAllResponse {
         this.userAllResponse = new UserAllResponse(commentModel.getCreator());
         this.postId = commentModel.getPost() != null ? commentModel.getPost().getId() : null;
         this.parentComment = commentModel.getParentComment() != null ? commentModel.getParentComment().getId() : null;
-        //this.likes = post.getLikes() != null ? post.getLikes().size() : 0;
+        this.likes = commentModel.getLikes() != null ? commentModel.getLikes().size() : 0;
         this.comments = commentModel.getChildComments() != null ? commentModel.getChildComments().size() : 0;
     }
 }

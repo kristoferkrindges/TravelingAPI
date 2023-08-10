@@ -39,10 +39,10 @@ public class PostModel {
     @JoinColumn(name="creator_id")
     private UserModel creator;
     @JsonIgnore
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<LikeModel> likes = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<FavoriteModel> favorites = new ArrayList<>();
     @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)

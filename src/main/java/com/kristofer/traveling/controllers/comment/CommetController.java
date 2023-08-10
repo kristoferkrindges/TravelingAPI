@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kristofer.traveling.dtos.requests.comment.CommentRequest;
 import com.kristofer.traveling.dtos.responses.comment.CommentAllResponse;
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.services.CommentService;
 
 import lombok.RequiredArgsConstructor;
@@ -57,8 +58,13 @@ public class CommetController {
     public ResponseEntity<List<CommentAllResponse>> childComment(@PathVariable("id") Long postId){
         return ResponseEntity.ok().body(commentService.getChildComment(postId)); 
     }
-    // @GetMapping(value = "/like/{id}")
-    // public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long followingId){
-    //     return ResponseEntity.ok().body(commentService.allLikesPost(followingId)); 
-    // }
+    @PostMapping("/like/{id}")
+    public ResponseEntity<String> toggleLike(@PathVariable("id") Long commentId, @RequestHeader("Authorization") String authorizationHeader){
+        commentService.toogleLikeComment(authorizationHeader, commentId);
+        return ResponseEntity.ok("Successfully like comment!");
+    }
+    @GetMapping(value = "/like/{id}")
+    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long commentId){
+        return ResponseEntity.ok().body(commentService.getLikedCommentsUser(commentId)); 
+    }
 }

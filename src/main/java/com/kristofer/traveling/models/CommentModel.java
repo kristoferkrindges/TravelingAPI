@@ -39,9 +39,9 @@ public class CommentModel {
     @ManyToOne
     @JoinColumn(name="post_id")
     private PostModel post;
-    // @JsonIgnore
-    // @OneToMany(mappedBy = "comment")
-    // private List<LikeModel> likes = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "comment")
+    private List<LikeModel> likes = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "parent_comment_id")
     private CommentModel parentComment;
