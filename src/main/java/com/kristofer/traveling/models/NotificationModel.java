@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,16 +26,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="storie_table")
-public class StorieModel {
+@Table(name="notification_table")
+public class NotificationModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String video;
-    private Date datePublic;
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private UserModel user;
     @ManyToOne
     @JoinColumn(name="creator_id")
     private UserModel creator;
+    private Long activityId;
+    private NotificationTypeEnum type;
+    private boolean read;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

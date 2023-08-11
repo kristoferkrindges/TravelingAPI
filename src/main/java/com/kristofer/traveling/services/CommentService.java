@@ -12,6 +12,7 @@ import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.CommentModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
+import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
 import com.kristofer.traveling.repositories.CommentRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
@@ -27,6 +28,7 @@ public class CommentService {
     private final UserService userService;
     private final LikeService likeService;
     private final PostService postService;
+    private final NotificationService notificationService;
 
     public List<CommentAllResponse> findAll(){
         List<CommentModel> comments = commentRepository.findAll();
@@ -86,6 +88,7 @@ public class CommentService {
         UserModel user = userService.userByToken(token);
         CommentModel comment = this.verifyCommentExistId(commentId);
         likeService.toggleLikeComment(user, comment);
+        notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKEPOST, user, comment.getId());
     }
 
     public List<UserAllResponse> getLikedCommentsUser(Long commentId) {
@@ -126,11 +129,14 @@ public class CommentService {
             .creator(user)
             .build();
         if (request.getParentComment() != null){
-            comment.setParentComment(this.verifyExistsComment(request));
+            CommentModel commentFather = this.verifyExistsComment(request);
+            comment.setParentComment(commentFather);
+            notificationService.createNotification(commentFather.getCreator(), NotificationTypeEnum.REPLYCOMMENT, user, commentFather.getId());
         }
         if (request.getPostId() != null){
             PostModel post = postService.findByIdPost(request.getPostId());
             comment.setPost(post);
+            notificationService.createNotification(post.getCreator(), NotificationTypeEnum.COMMENTPOST, user, post.getId());
         }
         return comment;
     }

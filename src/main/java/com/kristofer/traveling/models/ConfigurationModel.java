@@ -24,16 +24,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="storie_table")
-public class StorieModel {
+@Table(name="configuration_table")
+public class ConfigurationModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String video;
-    private Date datePublic;
     @ManyToOne
-    @JoinColumn(name="creator_id")
-    private UserModel creator;
+    @JoinColumn(name="user_id")
+    private UserModel user;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
