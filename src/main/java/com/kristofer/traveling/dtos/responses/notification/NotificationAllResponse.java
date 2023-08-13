@@ -1,0 +1,30 @@
+package com.kristofer.traveling.dtos.responses.notification;
+
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.models.NotificationModel;
+import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+@AllArgsConstructor
+public class NotificationAllResponse {
+    private Long id;
+    private UserAllResponse user;
+    private UserAllResponse creator;
+    private Long activityId;
+    private NotificationTypeEnum type;
+    private boolean read;
+
+    public NotificationAllResponse(NotificationModel notificationModel){
+        this.id = notificationModel.getId();
+        this.user = new UserAllResponse(notificationModel.getUser());
+        this.creator = new UserAllResponse(notificationModel.getCreator());
+        this.activityId = notificationModel.getActivityId();
+        this.type = notificationModel.getType();
+        this.read = notificationModel.isRead();
+    }
+}

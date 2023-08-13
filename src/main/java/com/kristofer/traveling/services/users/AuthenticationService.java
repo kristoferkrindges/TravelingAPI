@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.kristofer.traveling.services.ConfigurationService;
 import com.kristofer.traveling.services.JwtService;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
@@ -31,10 +32,13 @@ public class AuthenticationService {
     private final JwtService jwtService;
 
     private final AuthenticationManager authenticationManager;
+
+    private final ConfigurationService configurationService;
     
     public AuthenticationResponse register(RegisterRequest request){
         UserModel user = this.registerData(request);
         userRepository.save(user);
+        configurationService.creteConfiguration(user);
         return generatorToken(user);
     }
 
