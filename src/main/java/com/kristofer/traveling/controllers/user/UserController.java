@@ -19,6 +19,7 @@ import com.kristofer.traveling.dtos.requests.user.UserUpdateRequest;
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserCheckResponse;
+import com.kristofer.traveling.models.ConfigurationModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.services.users.UserInteractionService;
 import com.kristofer.traveling.services.users.UserService;
@@ -114,5 +115,15 @@ public class UserController {
     @GetMapping(value = "/favorites")
     public ResponseEntity<List<PostAllResponse>> allFavorites(@RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(userInteractionService.allFavoritesUser(authorizationHeader)); 
+    }
+
+    @GetMapping(value = "/configuration")
+    public ResponseEntity<ConfigurationModel> configurationUser(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.getAllConfigurationUser(authorizationHeader)); 
+    }
+    @PostMapping("/darkmode")
+    public ResponseEntity<Void> toggleDarkMode(@RequestHeader("Authorization") String authorizationHeader){
+        userInteractionService.toggleDarkMode(authorizationHeader);
+        return ResponseEntity.noContent().build();
     }
 }
