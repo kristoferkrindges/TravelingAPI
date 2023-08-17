@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.kristofer.traveling.configs.Filter.CorsOptionsRequestFilter;
 import com.kristofer.traveling.configs.Filter.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,14 @@ public class SecurityConfiguration {
 
     private final AuthenticationProvider authenticationProvider;
 
+    private final CorsOptionsRequestFilter corsOptionsRequestFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
             .csrf()
             .disable()
+            .addFilterBefore(corsOptionsRequestFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests()
             .requestMatchers("/api/auth/**")
             .permitAll()
