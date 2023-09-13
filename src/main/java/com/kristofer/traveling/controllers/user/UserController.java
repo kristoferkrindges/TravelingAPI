@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kristofer.traveling.dtos.requests.user.PasswordsRequest;
+import com.kristofer.traveling.dtos.requests.user.PhotoRequest;
 import com.kristofer.traveling.dtos.requests.user.UserUpdateRequest;
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
@@ -59,7 +60,19 @@ public class UserController {
     @PatchMapping(value = "/updatepassword")
     public ResponseEntity<String> updatePassword(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PasswordsRequest obj){
         userService.updatePassword(authorizationHeader, obj);
-        return ResponseEntity.ok().body("Password update with sucess!");
+        return ResponseEntity.ok().body("Password update with success!");
+    }
+
+    @PatchMapping(value = "/updatephoto")
+    public ResponseEntity<String> updatePhoto(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PhotoRequest request){
+        userService.updatePhoto(authorizationHeader, request);
+        return ResponseEntity.ok().body("Photo update with success!");
+    }
+
+    @PatchMapping(value = "/updatebanner")
+    public ResponseEntity<String> updateBanner(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PhotoRequest request){
+        userService.updateBanner(authorizationHeader, request);
+        return ResponseEntity.ok().body("Banner update with success!");
     }
 
     @DeleteMapping()

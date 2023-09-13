@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.user.PasswordsRequest;
+import com.kristofer.traveling.dtos.requests.user.PhotoRequest;
 import com.kristofer.traveling.dtos.requests.user.UserUpdateRequest;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.UserModel;
@@ -60,6 +61,18 @@ public class UserService {
         this.validateAtIsEqual(userUpdate, request.getAt());
         userRepository.save(this.updateData(userUpdate, request));
         return;
+    }
+
+    public void updatePhoto(String token, PhotoRequest request){
+        UserModel userUpdate = userByToken(token);
+        userUpdate.setPhoto(request.getImageUrl());
+        userRepository.save(userUpdate);
+    }
+
+    public void updateBanner(String token, PhotoRequest request){
+        UserModel userUpdate = userByToken(token);
+        userUpdate.setBanner(request.getImageUrl());
+        userRepository.save(userUpdate);
     }
 
     public void delete(String token){
