@@ -24,11 +24,11 @@ public class FollowerService {
         return followerRepository.findAll();
     }
 
-    public List<UserAllResponse> getFollowersUser(Long userId){
-        List<UserAllResponse> followers = new ArrayList<>();
+    public List<UserModel> getFollowersUser(Long userId){
+        List<UserModel> followers = new ArrayList<>();
         List<FollowerModel> followerRelation = followerRepository.findByFollowingId(userId);
         for(FollowerModel followerRelations : followerRelation){
-            followers.add(new UserAllResponse(followerRelations.getFollower()));
+            followers.add(followerRelations.getFollower());
         }
         return followers;
     }
@@ -53,6 +53,18 @@ public class FollowerService {
         return;
     }
 
+    public boolean FollowOrDelete(UserModel follower, UserModel following){
+        Optional<FollowerModel> followerModel = followerRepository.findByFollowerAndFollowing(following, follower);
+        if(followerModel.isPresent()){
+            followerRepository.delete(followerModel.get());
+            return false;
+        }else{
+            this.insert(follower, following);
+            return true;
+        }
+        
+    }
+
     private void createdFollowerData(UserModel follower, UserModel following) {
         var followerRelation = FollowerModel.builder()
             .follower(following)
@@ -60,6 +72,15 @@ public class FollowerService {
             .build();
         followerRepository.save(followerRelation);
         return;
+    }
+
+    public boolean searchFollower(UserModel follower, UserModel following){
+        Optional<FollowerModel> followerModel = followerRepository.findByFollowerAndFollowing(following, follower);
+        if(followerModel.isPresent()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     private FollowerModel findFollower(UserModel follower, UserModel following) {

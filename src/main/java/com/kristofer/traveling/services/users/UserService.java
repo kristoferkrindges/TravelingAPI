@@ -50,6 +50,12 @@ public class UserService {
             ()-> new ObjectNotFoundException("User with id " + id + " not found"));
     }
 
+    public UserModel findByAt(String at){
+        Optional<UserModel> obj = userRepository.findByAt(at);
+        return obj.orElseThrow(
+            ()-> new ObjectNotFoundException("User with at " + at + " not found"));
+    }
+
     public UserModel checkUser(String token){
         UserModel user = userByToken(token);
         return user;

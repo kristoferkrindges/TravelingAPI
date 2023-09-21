@@ -45,6 +45,12 @@ public class UserController {
         return ResponseEntity.ok().body(new UserAllResponse(user));
     }
 
+    @GetMapping(value = "/profile/{at}")
+    public ResponseEntity<UserAllResponse> findByAt(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String at){
+        UserAllResponse user = userInteractionService.responseFindByAt(authorizationHeader, userService.findByAt(at));
+        return ResponseEntity.ok().body(user);
+    }
+
     @GetMapping(value = "/checkuser")
     public ResponseEntity<UserCheckResponse> checkUser(@RequestHeader("Authorization") String authorizationHeader){
         UserModel user = userService.checkUser(authorizationHeader);
@@ -83,24 +89,18 @@ public class UserController {
 
     @PostMapping("/{id}/follow")
     public ResponseEntity<String> followUser(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader) {
-        userInteractionService.followUser(authorizationHeader, followingId);
+        userInteractionService.processFollow(authorizationHeader, followingId);
         return ResponseEntity.ok("Successfully followed!");
     }
 
-    @PostMapping("/{id}/unfollow")
-    public ResponseEntity<String> unfollowUser(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader) {
-        userInteractionService.unfollowUser(authorizationHeader, followingId);
-        return ResponseEntity.ok("Successfully unfollowed!");
-    }
-
     @GetMapping(value = "/{id}/followings")
-    public ResponseEntity<List<UserAllResponse>> findFollowersOfUser(@PathVariable Long id){
-        return ResponseEntity.ok().body(userInteractionService.getFollowingsOfUser(id));
+    public ResponseEntity<List<UserAllResponse>> findFollowersOfUser(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.getFollowingsOfUser(id, authorizationHeader));
     }
 
     @GetMapping(value = "/{id}/followers")
-    public ResponseEntity<List<UserAllResponse>> findFollowingsUser(@PathVariable Long id){
-        return ResponseEntity.ok().body(userInteractionService.getFollowersOfUser(id)); 
+    public ResponseEntity<List<UserAllResponse>> findFollowingsUser(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.getFollowersOfUser(id, authorizationHeader)); 
     }
 
     @PostMapping("/{id}/removefollow")

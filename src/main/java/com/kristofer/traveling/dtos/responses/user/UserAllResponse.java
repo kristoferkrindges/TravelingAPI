@@ -20,6 +20,7 @@ public class UserAllResponse {
     private Integer posts;
     private Integer followers;
     private Integer followings;
+    private boolean follow;
 
     public UserAllResponse(UserModel userModel){
         this.id = userModel.getId();
@@ -31,6 +32,20 @@ public class UserAllResponse {
         this.posts = userModel.getPosts().size();
         this.followers = userModel.getFollowers().size();
         this.followings = userModel.getFollowing().size();
+        this.follow = false;
+    }
+
+    public UserAllResponse(UserModel userModel, boolean follow){
+        this.id = userModel.getId();
+        this.firstname = userModel.getFirstname();
+        this.lastname = userModel.getLastname();
+        this.at = userModel.getAt();
+        this.photo = userModel.getPhoto();
+        this.banner = userModel.getBanner();
+        this.posts = userModel.getPosts().size();
+        this.followers = userModel.getFollowers().size();
+        this.followings = userModel.getFollowing().size();
+        this.follow = follow;
     }
 
     public UserAllResponse(){

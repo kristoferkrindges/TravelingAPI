@@ -1,5 +1,6 @@
 package com.kristofer.traveling.services.users;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.ConfigurationModel;
-import com.kristofer.traveling.models.FollowingModel;
+import com.kristofer.traveling.models.FollowerModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
@@ -33,28 +34,48 @@ public class UserInteractionService {
     private final NotificationService notificationService;
     private final ConfigurationService configurationService;
 
-    public FollowingModel followUser(String token, Long followingId) {
-        UserModel follower = userService.userByToken(token);
-        UserModel following = userService.findById(followingId);
-
-        followerService.insert(follower, following);
-        notificationService.createNotification(following, NotificationTypeEnum.FOLLOW, follower, null);
-        return followingService.insert(follower, following);
+    public String processFollow(String token, Long followId){
+        UserModel owner = userService.userByToken(token);
+        UserModel following = userService.findById(followId);
+        if(followerService.FollowOrDelete(owner, following)){
+            notificationService.createNotification(following, NotificationTypeEnum.FOLLOW, owner, null);
+            followingService.insert(owner, following);
+            return "Follow user with success!";
+        }else{
+            followingService.delete(owner, following);
+            return "Unfollow user with success!";
+        }
     }
 
-    public void unfollowUser(String token, Long followingId) {
-        UserModel follower = userService.userByToken(token);
-        UserModel following = userService.findById(followingId);
-
-        followerService.delete(follower, following);
-        followingService.delete(follower, following);
+    public UserAllResponse responseFindByAt(String token, UserModel user){
+        UserModel owner;
+        UserAllResponse userAt = new UserAllResponse(user);
+        if(token != null && !token.isEmpty()){
+            owner = userService.userByToken(token);
+            userAt.setFollow(followerService.searchFollower(owner, user));
+        }else{
+            userAt.setFollow(false);
+        }
+        return userAt;
     }
 
-    public List<UserAllResponse> getFollowingsOfUser(Long id) {
-        return followerService.getFollowersUser(id);
+    public List<UserAllResponse> getFollowingsOfUser(Long id, String token) {
+        UserModel owner = userService.userByToken(token);
+        List<UserAllResponse> followers = new ArrayList<>();
+        for(UserModel user : followerService.getFollowersUser(id)){
+            followers.add(new UserAllResponse(user, followerService.searchFollower(owner, user)));
+        }
+        return followers;
     }
-    public List<UserAllResponse> getFollowersOfUser(Long id) {
-        return followingService.getFollowingsUser(id);
+
+    // Modify
+    public List<UserAllResponse> getFollowersOfUser(Long id, String token) {
+        UserModel owner = userService.userByToken(token);
+        List<UserAllResponse> followings = new ArrayList<>();
+        for(UserModel user : followingService.getFollowingsUser(id)){
+            followings.add(new UserAllResponse(user, followingService.searchFollowing(owner, user)));
+        }
+        return followings;
     }
 
     public void removeFollow(String token, Long followingId){

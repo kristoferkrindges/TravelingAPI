@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.models.FollowerModel;
 import com.kristofer.traveling.models.FollowingModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowingRepository;
@@ -23,14 +23,23 @@ public class FollowingService {
         return followingRepository.findAll();
     }
 
-    public List<UserAllResponse> getFollowingsUser(Long userId){
-        List<UserAllResponse> followings = new ArrayList<>();
+    public List<UserModel> getFollowingsUser(Long userId){
+        List<UserModel> followings = new ArrayList<>();
         List<FollowingModel> followingRelation = followingRepository.findByFollowerId(userId);
         for(FollowingModel followingRelations : followingRelation){
-            followings.add(new UserAllResponse(followingRelations.getFollowing()));
+            followings.add(followingRelations.getFollowing());
         }
         return followings;
     }
+
+    // public List<UserAllResponse> getFollowingsUser(Long userId){
+    //     List<UserAllResponse> followings = new ArrayList<>();
+    //     List<FollowingModel> followingRelation = followingRepository.findByFollowerId(userId);
+    //     for(FollowingModel followingRelations : followingRelation){
+    //         followings.add(new UserAllResponse(followingRelations.getFollowing()));
+    //     }
+    //     return followings;
+    // }
 
     public FollowingModel insert(UserModel follower, UserModel following){
         return this.createdFollowingData(follower, following);
@@ -50,6 +59,15 @@ public class FollowingService {
         FollowingModel followingModel = this.findFollowing(follower, following);
         followingRepository.delete(followingModel);
         return;
+    }
+
+    public boolean searchFollowing(UserModel follower, UserModel following){
+        Optional<FollowingModel> followingModel = followingRepository.findByFollowerAndFollowing(following, follower);
+        if(followingModel.isPresent()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     private FollowingModel findFollowing(UserModel follower, UserModel following) {
