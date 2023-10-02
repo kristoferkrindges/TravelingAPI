@@ -27,13 +27,13 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping()
-    public ResponseEntity<List<PostAllResponse>> findAll(){
-        return ResponseEntity.ok().body(postService.findAll());
+    public ResponseEntity<List<PostAllResponse>> findAll(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.findAll(authorizationHeader));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<PostAllResponse> findById(@PathVariable Long id){
-        return ResponseEntity.ok().body(postService.findById(id));
+    public ResponseEntity<PostAllResponse> findById(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.findById(id, authorizationHeader));
     }
 
     @PostMapping()
@@ -50,12 +50,12 @@ public class PostController {
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
         return ResponseEntity.ok().body(postService.delete(authorizationHeader, id));
     }
-    @GetMapping(value = "/like/{id}")
-    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long postId){
-        return ResponseEntity.ok().body(postService.allLikesPost(postId)); 
+    @GetMapping(value = "/likes/{id}")
+    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long postId, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.allLikesPost(postId, authorizationHeader)); 
     }
     @GetMapping(value = "/favorites/{id}")
-    public ResponseEntity<List<UserAllResponse>> allFavorites(@PathVariable("id") Long postId){
-        return ResponseEntity.ok().body(postService.allFavoritesPost(postId)); 
+    public ResponseEntity<List<UserAllResponse>> allFavorites(@PathVariable("id") Long postId, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.allFavoritesPost(postId, authorizationHeader)); 
     }
 }

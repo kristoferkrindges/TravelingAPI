@@ -91,9 +91,9 @@ public class CommentService {
         notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKEPOST, user, comment.getId());
     }
 
-    public List<UserAllResponse> getLikedCommentsUser(Long commentId) {
+    public List<UserAllResponse> getLikedCommentsUser(Long commentId, String token) {
         CommentModel comment = this.verifyCommentExistId(commentId);
-        return likeService.getLikedCommentsUser(comment);
+        return likeService.getLikedCommentsUser(comment, token);
     }
 
     private CommentModel updateDataComment(String token, CommentRequest request, Long id) {

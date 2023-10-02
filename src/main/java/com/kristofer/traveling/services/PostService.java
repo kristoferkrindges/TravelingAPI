@@ -28,18 +28,21 @@ public class PostService {
     private final LikeService likeService;
     private final FavoriteService favoriteService;
 
-    public List<PostAllResponse> findAll(){
+    public List<PostAllResponse> findAll(String token){
         List<PostModel> posts = postRepository.findAll();
-        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
+        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
+            x, this.pressLike(token, x), this.pressFavorite(token, x)))
         .collect(Collectors.toList());
         return postAllResponse;
     }
 
-    public PostAllResponse findById(Long id){
+    public PostAllResponse findById(Long id, String token){
         PostModel postModel = this.findPost(id);
-        PostAllResponse post = new PostAllResponse(postModel);
+        PostAllResponse post = new PostAllResponse(
+            postModel, this.pressLike(token, postModel), this.pressFavorite(token, postModel));
         return post;
     }
+ 
 
     public PostAllResponse insert(String token, PostRequest request){
         PostModel post = this.createdPostModel(token, request);
@@ -64,14 +67,24 @@ public class PostService {
         return this.findPost(postId);
     }
 
-    public List<UserAllResponse> allLikesPost(Long postId){
+    public List<UserAllResponse> allLikesPost(Long postId, String token){
         PostModel post = this.findByIdPost(postId);
-        return likeService.getLikedPostUsers(post);
+        return likeService.getLikedPostUsers(post, token);
     }
 
-    public List<UserAllResponse> allFavoritesPost(Long postId){
+    public List<UserAllResponse> allFavoritesPost(Long postId, String token){
         PostModel post = this.findByIdPost(postId);
-        return favoriteService.getFavoritePostUsers(post);
+        return favoriteService.getFavoritePostUsers(post, token);
+    }
+
+    private boolean pressLike(String token, PostModel post){
+        UserModel user = userService.userByToken(token);
+        return likeService.pressLike(user, post);
+    }
+
+    private boolean pressFavorite(String token, PostModel post){
+        UserModel user = userService.userByToken(token);
+        return favoriteService.pressFavorite(user, post);
     }
 
     private PostModel updateDataPost(String token, PostRequest request, Long id){

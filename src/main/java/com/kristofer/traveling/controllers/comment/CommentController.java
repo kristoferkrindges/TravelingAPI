@@ -64,7 +64,7 @@ public class CommentController {
         return ResponseEntity.ok("Successfully like comment!");
     }
     @GetMapping(value = "/like/{id}")
-    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long commentId){
-        return ResponseEntity.ok().body(commentService.getLikedCommentsUser(commentId)); 
+    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long commentId, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(commentService.getLikedCommentsUser(commentId, authorizationHeader)); 
     }
 }
