@@ -25,21 +25,13 @@ public class FollowingService {
 
     public List<UserModel> getFollowingsUser(Long userId){
         List<UserModel> followings = new ArrayList<>();
-        List<FollowingModel> followingRelation = followingRepository.findByFollowerId(userId);
+        // List<FollowingModel> followingRelation = followingRepository.findByFollowerId(userId);
+        List<FollowingModel> followingRelation = followingRepository.findByFollowerIdOrderByidDesc(userId);
         for(FollowingModel followingRelations : followingRelation){
             followings.add(followingRelations.getFollowing());
         }
         return followings;
     }
-
-    // public List<UserAllResponse> getFollowingsUser(Long userId){
-    //     List<UserAllResponse> followings = new ArrayList<>();
-    //     List<FollowingModel> followingRelation = followingRepository.findByFollowerId(userId);
-    //     for(FollowingModel followingRelations : followingRelation){
-    //         followings.add(new UserAllResponse(followingRelations.getFollowing()));
-    //     }
-    //     return followings;
-    // }
 
     public FollowingModel insert(UserModel follower, UserModel following){
         return this.createdFollowingData(follower, following);

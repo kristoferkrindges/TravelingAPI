@@ -60,7 +60,8 @@ public class LikeService {
     }
     
     public List<PostAllResponse> getLikedUserPosts(UserModel user) {
-        List<LikeModel> likes = likeRepository.findByUser(user);
+        // List<LikeModel> likes = likeRepository.findByUser(user);
+        List<LikeModel> likes = likeRepository.findLikesByUserOrderByDescendingId(user);
         List<PostModel> posts = likes.stream().map(LikeModel::getPost).collect(Collectors.toList());
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
         .collect(Collectors.toList());

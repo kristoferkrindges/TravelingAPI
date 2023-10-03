@@ -3,6 +3,8 @@ package com.kristofer.traveling.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Collections;
 
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ public class PostService {
 
     public List<PostAllResponse> findAll(String token){
         List<PostModel> posts = postRepository.findAll();
+        Collections.sort(posts, Comparator.comparing(PostModel::getDatePublic).reversed());
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
             x, this.pressLike(token, x), this.pressFavorite(token, x)))
         .collect(Collectors.toList());

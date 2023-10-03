@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.kristofer.traveling.models.CommentModel;
 import com.kristofer.traveling.models.LikeModel;
@@ -16,4 +17,6 @@ public interface LikeRepository extends JpaRepository<LikeModel, Long> {
     Optional<LikeModel> findByUserAndPost(UserModel user, PostModel post);
     Optional<LikeModel> findByUserAndComment(UserModel user, CommentModel comment);
     List<LikeModel> findByComment(CommentModel comment);
+    @Query("SELECT f FROM LikeModel f WHERE f.user = :user ORDER BY f.id DESC")
+    List<LikeModel> findLikesByUserOrderByDescendingId(UserModel user);
 }

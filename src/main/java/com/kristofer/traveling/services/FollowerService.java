@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.FollowerModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowerRepository;
@@ -26,7 +25,7 @@ public class FollowerService {
 
     public List<UserModel> getFollowersUser(Long userId){
         List<UserModel> followers = new ArrayList<>();
-        List<FollowerModel> followerRelation = followerRepository.findByFollowingId(userId);
+        List<FollowerModel> followerRelation = followerRepository.findByFollowingIdOrderByidDesc(userId);
         for(FollowerModel followerRelations : followerRelation){
             followers.add(followerRelations.getFollower());
         }

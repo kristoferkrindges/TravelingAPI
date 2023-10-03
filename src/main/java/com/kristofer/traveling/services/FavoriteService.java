@@ -46,7 +46,8 @@ public class FavoriteService {
     }
 
     public List<PostAllResponse> getFavoriteUserPosts(UserModel user){
-        List<FavoriteModel> favorites = favoriteRepository.findByUser(user);
+        // List<FavoriteModel> favorites = favoriteRepository.findByUser(user);
+        List<FavoriteModel> favorites = favoriteRepository.findFavoritesByUserOrderByDescendingId(user);
         List<PostModel> posts = favorites.stream().map(FavoriteModel::getPost).collect(Collectors.toList());
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
         .collect(Collectors.toList());
