@@ -34,7 +34,7 @@ public class PostService {
         List<PostModel> posts = postRepository.findAll();
         Collections.sort(posts, Comparator.comparing(PostModel::getDatePublic).reversed());
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
-            x, this.pressLike(token, x), this.pressFavorite(token, x)))
+            x, this.pressLike(token, x), this.pressFavorite(token, x), likeService.findTop3UsersWhoLikedPost(x.getId())))
         .collect(Collectors.toList());
         return postAllResponse;
     }
@@ -42,7 +42,7 @@ public class PostService {
     public PostAllResponse findById(Long id, String token){
         PostModel postModel = this.findPost(id);
         PostAllResponse post = new PostAllResponse(
-            postModel, this.pressLike(token, postModel), this.pressFavorite(token, postModel));
+            postModel, this.pressLike(token, postModel), this.pressFavorite(token, postModel), likeService.findTop3UsersWhoLikedPost(id));
         return post;
     }
  
@@ -59,13 +59,6 @@ public class PostService {
         return new PostAllResponse(post);
     }
 
-    public String delete(String token, Long id){
-        PostModel postModel = this.findPost(id);
-        this.verifyIdUser(token, postModel.getCreator().getId());
-        this.postRepository.delete(postModel);
-        return "Delete with sucess!";
-    }
-
     public PostModel findByIdPost(Long postId){
         return this.findPost(postId);
     }
@@ -80,12 +73,12 @@ public class PostService {
         return favoriteService.getFavoritePostUsers(post, token);
     }
 
-    private boolean pressLike(String token, PostModel post){
+    public boolean pressLike(String token, PostModel post){
         UserModel user = userService.userByToken(token);
         return likeService.pressLike(user, post);
     }
 
-    private boolean pressFavorite(String token, PostModel post){
+    public boolean pressFavorite(String token, PostModel post){
         UserModel user = userService.userByToken(token);
         return favoriteService.pressFavorite(user, post);
     }

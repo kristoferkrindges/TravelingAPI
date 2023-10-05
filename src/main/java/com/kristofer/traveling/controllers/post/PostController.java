@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kristofer.traveling.dtos.requests.post.PostRequest;
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.services.PostInteractionService;
 import com.kristofer.traveling.services.PostService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final PostInteractionService postInteractionService;
 
     @GetMapping()
     public ResponseEntity<List<PostAllResponse>> findAll(@RequestHeader("Authorization") String authorizationHeader){
@@ -48,7 +50,7 @@ public class PostController {
     
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
-        return ResponseEntity.ok().body(postService.delete(authorizationHeader, id));
+        return ResponseEntity.ok().body(postInteractionService.delete(authorizationHeader, id));
     }
     @GetMapping(value = "/likes/{id}")
     public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long postId, @RequestHeader("Authorization") String authorizationHeader){

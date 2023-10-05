@@ -19,4 +19,5 @@ public interface LikeRepository extends JpaRepository<LikeModel, Long> {
     List<LikeModel> findByComment(CommentModel comment);
     @Query("SELECT f FROM LikeModel f WHERE f.user = :user ORDER BY f.id DESC")
     List<LikeModel> findLikesByUserOrderByDescendingId(UserModel user);
+    List<LikeModel> findTop3ByPostIdOrderByCreatedAtAsc(Long postId);
 }

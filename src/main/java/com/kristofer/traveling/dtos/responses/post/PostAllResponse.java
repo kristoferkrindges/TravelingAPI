@@ -1,8 +1,10 @@
 package com.kristofer.traveling.dtos.responses.post;
 
 import java.util.Date;
+import java.util.List;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.dtos.responses.user.UserLikePost;
 import com.kristofer.traveling.models.PostModel;
 
 import lombok.AllArgsConstructor;
@@ -23,6 +25,7 @@ public class PostAllResponse {
     private Integer favorites;
     private boolean pressLike;
     private boolean pressFavorite;
+    private List<UserLikePost> usersLikes;
 
      public PostAllResponse(PostModel post){
         this.id = post.getId();
@@ -37,7 +40,7 @@ public class PostAllResponse {
         this.pressFavorite = false;
     }
 
-    public PostAllResponse(PostModel post, boolean pressLike, boolean pressFavorite){
+    public PostAllResponse(PostModel post, boolean pressLike, boolean pressFavorite, List<UserLikePost> usersLikes){
         this.id = post.getId();
         this.phrase = post.getPhrase();
         this.img = post.getImg();
@@ -48,6 +51,7 @@ public class PostAllResponse {
         this.favorites = post.getFavorites() != null ? post.getFavorites().size() : 0;
         this.pressLike = pressLike;
         this.pressFavorite = pressFavorite;
+        this.usersLikes = usersLikes;
 
     }
 }

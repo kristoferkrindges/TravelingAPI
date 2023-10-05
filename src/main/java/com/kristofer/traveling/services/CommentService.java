@@ -96,6 +96,11 @@ public class CommentService {
         return likeService.getLikedCommentsUser(comment, token);
     }
 
+    public void deleteAllCommentsPosts(PostModel postModel) {
+        List<CommentModel> comments = commentRepository.findByPost(postModel);
+        commentRepository.deleteAll(comments);
+    }
+
     private CommentModel updateDataComment(String token, CommentRequest request, Long id) {
         CommentModel commentModel = this.verifyCommentExistId(id);
         this.verifyRequestUpdate(request);
@@ -171,4 +176,5 @@ public class CommentService {
         }
         return commentModel.get();
     }
+
 }

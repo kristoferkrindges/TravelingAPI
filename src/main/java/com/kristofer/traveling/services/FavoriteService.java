@@ -45,13 +45,9 @@ public class FavoriteService {
         }
     }
 
-    public List<PostAllResponse> getFavoriteUserPosts(UserModel user){
-        // List<FavoriteModel> favorites = favoriteRepository.findByUser(user);
+    public List<FavoriteModel> getFavoriteUserPosts(UserModel user){
         List<FavoriteModel> favorites = favoriteRepository.findFavoritesByUserOrderByDescendingId(user);
-        List<PostModel> posts = favorites.stream().map(FavoriteModel::getPost).collect(Collectors.toList());
-        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
-        .collect(Collectors.toList());
-        return postAllResponse;
+        return favorites;
     }
 
     public List<UserAllResponse> getFavoritePostUsers(PostModel post, String token){
@@ -62,5 +58,10 @@ public class FavoriteService {
             x-> new UserAllResponse(x, followerService.searchFollower(userOwner, x)))
         .collect(Collectors.toList());
         return usersAllResponse;
+    }
+
+    public void deleteAllFavoritesPosts(PostModel postModel) {
+        List<FavoriteModel> favorites = favoriteRepository.findByPost(postModel);
+        favoriteRepository.deleteAll(favorites);
     }
 }

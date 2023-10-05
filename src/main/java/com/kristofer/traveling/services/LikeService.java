@@ -1,5 +1,6 @@
 package com.kristofer.traveling.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.dtos.responses.user.UserLikePost;
 import com.kristofer.traveling.models.CommentModel;
 import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
@@ -59,13 +61,9 @@ public class LikeService {
         }
     }
     
-    public List<PostAllResponse> getLikedUserPosts(UserModel user) {
-        // List<LikeModel> likes = likeRepository.findByUser(user);
+    public List<LikeModel> getLikedUserPosts(UserModel user) {
         List<LikeModel> likes = likeRepository.findLikesByUserOrderByDescendingId(user);
-        List<PostModel> posts = likes.stream().map(LikeModel::getPost).collect(Collectors.toList());
-        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
-        .collect(Collectors.toList());
-        return postAllResponse;
+        return likes;
     }
 
     public List<UserAllResponse> getLikedPostUsers(PostModel post, String token) {
@@ -84,5 +82,22 @@ public class LikeService {
         List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x, followerService.searchFollower(userOwner, x)))
         .collect(Collectors.toList());
         return usersAllResponse;
+    }
+
+    public void deleteAllLikesPosts(PostModel postModel) {
+        List<LikeModel> likes = likeRepository.findByPost(postModel);
+        likeRepository.deleteAll(likes);
+    }
+
+    public List<UserLikePost> findTop3UsersWhoLikedPost(Long postId) {
+        List<LikeModel> topLikes = likeRepository.findTop3ByPostIdOrderByCreatedAtAsc(postId);
+        List<UserLikePost> topUsersWhoLikedPost = new ArrayList<>();
+
+        for (LikeModel like : topLikes) {
+            UserModel user = like.getUser();
+            topUsersWhoLikedPost.add(new UserLikePost(user));
+        }
+
+        return topUsersWhoLikedPost;
     }
 }
