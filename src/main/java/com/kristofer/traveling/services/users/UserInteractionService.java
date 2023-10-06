@@ -2,13 +2,16 @@ package com.kristofer.traveling.services.users;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.ConfigurationModel;
+import com.kristofer.traveling.models.FavoriteModel;
 import com.kristofer.traveling.models.FollowerModel;
+import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
@@ -104,19 +107,35 @@ public class UserInteractionService {
         configurationService.toogleDarkMode(user.getId());
     }
 
+    public List<PostAllResponse> getPostsOfUser(String at, String token) {
+        UserModel user = userService.findByAt(at);
+        return postService.findByUserOwner(user.getId(), token);
+    }
+
     public List<PostAllResponse> allLikesUser(String token){
         UserModel user = userService.userByToken(token);
-        return likeService.getLikedUserPosts(user);
+        List<LikeModel> likes = likeService.getLikedUserPosts(user);
+        List<PostModel> posts = likes.stream().map(LikeModel::getPost).collect(Collectors.toList());
+        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
+            x, postService.pressLike(token, x), postService.pressFavorite(token, x), likeService.findTop3UsersWhoLikedPost(x.getId())))
+            .collect(Collectors.toList());
+        return postAllResponse;
     }
 
     public List<PostAllResponse> allFavoritesUser(String token){
         UserModel user = userService.userByToken(token);
-        return favoriteService.getFavoriteUserPosts(user);
+        List<FavoriteModel> favorites = favoriteService.getFavoriteUserPosts(user);
+        List<PostModel> posts = favorites.stream().map(FavoriteModel::getPost).collect(Collectors.toList());
+        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
+            x, postService.pressLike(token, x), postService.pressFavorite(token, x), likeService.findTop3UsersWhoLikedPost(x.getId())))
+            .collect(Collectors.toList());
+        return postAllResponse;
     }
 
     public ConfigurationModel getAllConfigurationUser(String token){
         UserModel user = userService.userByToken(token);
         return configurationService.getAllConfigurationsUser(user.getId());
     }
+
     
 }

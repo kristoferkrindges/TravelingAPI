@@ -91,9 +91,14 @@ public class CommentService {
         notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKEPOST, user, comment.getId());
     }
 
-    public List<UserAllResponse> getLikedCommentsUser(Long commentId) {
+    public List<UserAllResponse> getLikedCommentsUser(Long commentId, String token) {
         CommentModel comment = this.verifyCommentExistId(commentId);
-        return likeService.getLikedCommentsUser(comment);
+        return likeService.getLikedCommentsUser(comment, token);
+    }
+
+    public void deleteAllCommentsPosts(PostModel postModel) {
+        List<CommentModel> comments = commentRepository.findByPost(postModel);
+        commentRepository.deleteAll(comments);
     }
 
     private CommentModel updateDataComment(String token, CommentRequest request, Long id) {
@@ -171,4 +176,5 @@ public class CommentService {
         }
         return commentModel.get();
     }
+
 }

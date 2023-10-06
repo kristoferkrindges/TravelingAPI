@@ -93,6 +93,11 @@ public class UserController {
         return ResponseEntity.ok("Successfully followed!");
     }
 
+    @GetMapping(value = "/{id}/posts")
+    public ResponseEntity<List<PostAllResponse>> findPostsOfUser(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.getPostsOfUser(id, authorizationHeader));
+    }
+
     @GetMapping(value = "/{id}/followings")
     public ResponseEntity<List<UserAllResponse>> findFollowersOfUser(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(userInteractionService.getFollowingsOfUser(id, authorizationHeader));

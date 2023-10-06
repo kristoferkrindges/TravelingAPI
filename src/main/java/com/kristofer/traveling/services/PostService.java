@@ -3,6 +3,8 @@ package com.kristofer.traveling.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Collections;
 
 import org.springframework.stereotype.Service;
 
@@ -28,18 +30,22 @@ public class PostService {
     private final LikeService likeService;
     private final FavoriteService favoriteService;
 
-    public List<PostAllResponse> findAll(){
+    public List<PostAllResponse> findAll(String token){
         List<PostModel> posts = postRepository.findAll();
-        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(x))
+        Collections.sort(posts, Comparator.comparing(PostModel::getDatePublic).reversed());
+        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
+            x, this.pressLike(token, x), this.pressFavorite(token, x), likeService.findTop3UsersWhoLikedPost(x.getId())))
         .collect(Collectors.toList());
         return postAllResponse;
     }
 
-    public PostAllResponse findById(Long id){
+    public PostAllResponse findById(Long id, String token){
         PostModel postModel = this.findPost(id);
-        PostAllResponse post = new PostAllResponse(postModel);
+        PostAllResponse post = new PostAllResponse(
+            postModel, this.pressLike(token, postModel), this.pressFavorite(token, postModel), likeService.findTop3UsersWhoLikedPost(id));
         return post;
     }
+ 
 
     public PostAllResponse insert(String token, PostRequest request){
         PostModel post = this.createdPostModel(token, request);
@@ -53,25 +59,37 @@ public class PostService {
         return new PostAllResponse(post);
     }
 
-    public String delete(String token, Long id){
-        PostModel postModel = this.findPost(id);
-        this.verifyIdUser(token, postModel.getCreator().getId());
-        this.postRepository.delete(postModel);
-        return "Delete with sucess!";
-    }
-
     public PostModel findByIdPost(Long postId){
         return this.findPost(postId);
     }
 
-    public List<UserAllResponse> allLikesPost(Long postId){
+    public List<UserAllResponse> allLikesPost(Long postId, String token){
         PostModel post = this.findByIdPost(postId);
-        return likeService.getLikedPostUsers(post);
+        return likeService.getLikedPostUsers(post, token);
     }
 
-    public List<UserAllResponse> allFavoritesPost(Long postId){
+    public List<UserAllResponse> allFavoritesPost(Long postId, String token){
         PostModel post = this.findByIdPost(postId);
-        return favoriteService.getFavoritePostUsers(post);
+        return favoriteService.getFavoritePostUsers(post, token);
+    }
+
+    public boolean pressLike(String token, PostModel post){
+        UserModel user = userService.userByToken(token);
+        return likeService.pressLike(user, post);
+    }
+
+    public boolean pressFavorite(String token, PostModel post){
+        UserModel user = userService.userByToken(token);
+        return favoriteService.pressFavorite(user, post);
+    }
+
+    public List<PostAllResponse> findByUserOwner(Long id, String token) {
+        List<PostModel> posts = postRepository.findByCreatorId(id);
+        Collections.sort(posts, Comparator.comparing(PostModel::getDatePublic).reversed());
+        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
+            x, this.pressLike(token, x), this.pressFavorite(token, x), likeService.findTop3UsersWhoLikedPost(x.getId())))
+        .collect(Collectors.toList());
+        return postAllResponse;
     }
 
     private PostModel updateDataPost(String token, PostRequest request, Long id){

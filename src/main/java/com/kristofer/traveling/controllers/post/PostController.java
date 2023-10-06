@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kristofer.traveling.dtos.requests.post.PostRequest;
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.services.PostInteractionService;
 import com.kristofer.traveling.services.PostService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,15 +26,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final PostInteractionService postInteractionService;
 
     @GetMapping()
-    public ResponseEntity<List<PostAllResponse>> findAll(){
-        return ResponseEntity.ok().body(postService.findAll());
+    public ResponseEntity<List<PostAllResponse>> findAll(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.findAll(authorizationHeader));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<PostAllResponse> findById(@PathVariable Long id){
-        return ResponseEntity.ok().body(postService.findById(id));
+    public ResponseEntity<PostAllResponse> findById(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.findById(id, authorizationHeader));
     }
 
     @PostMapping()
@@ -48,14 +50,14 @@ public class PostController {
     
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
-        return ResponseEntity.ok().body(postService.delete(authorizationHeader, id));
+        return ResponseEntity.ok().body(postInteractionService.delete(authorizationHeader, id));
     }
-    @GetMapping(value = "/like/{id}")
-    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long postId){
-        return ResponseEntity.ok().body(postService.allLikesPost(postId)); 
+    @GetMapping(value = "/likes/{id}")
+    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long postId, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.allLikesPost(postId, authorizationHeader)); 
     }
     @GetMapping(value = "/favorites/{id}")
-    public ResponseEntity<List<UserAllResponse>> allFavorites(@PathVariable("id") Long postId){
-        return ResponseEntity.ok().body(postService.allFavoritesPost(postId)); 
+    public ResponseEntity<List<UserAllResponse>> allFavorites(@PathVariable("id") Long postId, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(postService.allFavoritesPost(postId, authorizationHeader)); 
     }
 }
