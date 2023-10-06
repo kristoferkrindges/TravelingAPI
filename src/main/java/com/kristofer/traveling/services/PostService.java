@@ -83,6 +83,15 @@ public class PostService {
         return favoriteService.pressFavorite(user, post);
     }
 
+    public List<PostAllResponse> findByUserOwner(Long id, String token) {
+        List<PostModel> posts = postRepository.findByCreatorId(id);
+        Collections.sort(posts, Comparator.comparing(PostModel::getDatePublic).reversed());
+        List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
+            x, this.pressLike(token, x), this.pressFavorite(token, x), likeService.findTop3UsersWhoLikedPost(x.getId())))
+        .collect(Collectors.toList());
+        return postAllResponse;
+    }
+
     private PostModel updateDataPost(String token, PostRequest request, Long id){
         PostModel postModel = this.verifyPostExistId(id);
         this.verifyRequestUpdate(request);

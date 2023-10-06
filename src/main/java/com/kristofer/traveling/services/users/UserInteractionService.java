@@ -107,6 +107,11 @@ public class UserInteractionService {
         configurationService.toogleDarkMode(user.getId());
     }
 
+    public List<PostAllResponse> getPostsOfUser(String at, String token) {
+        UserModel user = userService.findByAt(at);
+        return postService.findByUserOwner(user.getId(), token);
+    }
+
     public List<PostAllResponse> allLikesUser(String token){
         UserModel user = userService.userByToken(token);
         List<LikeModel> likes = likeService.getLikedUserPosts(user);
@@ -131,5 +136,6 @@ public class UserInteractionService {
         UserModel user = userService.userByToken(token);
         return configurationService.getAllConfigurationsUser(user.getId());
     }
+
     
 }
