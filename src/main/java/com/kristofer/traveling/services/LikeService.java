@@ -48,6 +48,15 @@ public class LikeService {
         }
     }
 
+    public boolean pressLikeComment(UserModel user, CommentModel comment) {
+        Optional<LikeModel> existingLike = likeRepository.findByUserAndComment(user, comment);
+        if (existingLike.isPresent()) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public void toggleLikeComment(UserModel user, CommentModel comment){
         Optional<LikeModel> existingLike = likeRepository.findByUserAndComment(user, comment);
         if (existingLike.isPresent()) {

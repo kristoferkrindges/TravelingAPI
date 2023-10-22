@@ -27,13 +27,13 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping()
-    public ResponseEntity<List<CommentAllResponse>> findAll(){
-        return ResponseEntity.ok().body(commentService.findAll());
+    public ResponseEntity<List<CommentAllResponse>> findAll(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(commentService.findAll(authorizationHeader));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CommentAllResponse> findById(@PathVariable Long id){
-        return ResponseEntity.ok().body(commentService.findById(id));
+    public ResponseEntity<CommentAllResponse> findById(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
+        return ResponseEntity.ok().body(commentService.findById(authorizationHeader, id));
     }
 
     @PostMapping()
@@ -51,12 +51,12 @@ public class CommentController {
         return ResponseEntity.ok().body(commentService.delete(authorizationHeader, id));
     }
     @GetMapping(value = "/postComments/{id}")
-    public ResponseEntity<List<CommentAllResponse>> postComments(@PathVariable("id") Long postId){
-        return ResponseEntity.ok().body(commentService.getPostComments(postId)); 
+    public ResponseEntity<List<CommentAllResponse>> postComments(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Long postId){
+        return ResponseEntity.ok().body(commentService.getPostComments(authorizationHeader, postId)); 
     }
     @GetMapping(value = "/childComment/{id}")
-    public ResponseEntity<List<CommentAllResponse>> childComment(@PathVariable("id") Long postId){
-        return ResponseEntity.ok().body(commentService.getChildComment(postId)); 
+    public ResponseEntity<List<CommentAllResponse>> childComment(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Long postId){
+        return ResponseEntity.ok().body(commentService.getChildComment(authorizationHeader, postId)); 
     }
     @PostMapping("/like/{id}")
     public ResponseEntity<String> toggleLike(@PathVariable("id") Long commentId, @RequestHeader("Authorization") String authorizationHeader){

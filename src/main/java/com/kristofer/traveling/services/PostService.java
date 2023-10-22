@@ -99,6 +99,7 @@ public class PostService {
         postModel.setImg(request.getImg());
         postModel.setPhrase(request.getPhrase());
         postModel.setDatePublic(request.getDatePublic());
+        postModel.setEdit(true);
         return postModel;
     }
 
@@ -110,6 +111,7 @@ public class PostService {
             .phrase(request.getPhrase())
             .datePublic(request.getDatePublic())
             .creator(user)
+            .edit(false)
             .build();
         return post;
     }
