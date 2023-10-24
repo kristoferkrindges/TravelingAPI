@@ -13,6 +13,7 @@ import com.kristofer.traveling.dtos.responses.comment.CommentAllResponse;
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.CommentModel;
+import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
@@ -59,18 +60,19 @@ public class CommentService {
         return new CommentAllResponse(comment);
     }
 
-    public String delete(String token, Long id){
+    public String delete(String token, Long id) {
         CommentModel commentToDelete = this.verifyCommentExistId(id);
         this.verifyIdUser(token, commentToDelete.getCreator().getId());
-        if (commentToDelete.getParentComment() != null){
-            List<CommentModel> childComments = commentRepository.findByParentCommentId(commentToDelete.getId());
-            for (CommentModel childComment : childComments) {
-                // recursive call
-                delete(token, childComment.getId());
-            }
+    
+        likeService.deleteAllComments(id);
+        List<CommentModel> childComments = commentRepository.findByParentCommentId(id);
+        // recursively
+        for (CommentModel childComment : childComments) {
+            delete(token, childComment.getId());
         }
+    
         this.commentRepository.delete(commentToDelete);
-        return "Delete with sucess!";
+        return "Delete with success!";
     }
 
     public List<CommentAllResponse> getPostComments(String token, Long postId){
@@ -85,7 +87,7 @@ public class CommentService {
 
     public List<CommentAllResponse> getChildComment(String token, Long parentCommentId){
         List<CommentModel> comments = commentRepository.findByParentCommentId(parentCommentId);
-        Collections.sort(comments, Comparator.comparing(CommentModel::getDatePublic).reversed());
+        // Collections.sort(comments, Comparator.comparing(CommentModel::getDatePublic).reversed());
         List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(
             x, this.pressLike(token, x)))
         .collect(Collectors.toList());

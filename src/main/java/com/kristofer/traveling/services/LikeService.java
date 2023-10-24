@@ -109,4 +109,9 @@ public class LikeService {
 
         return topUsersWhoLikedPost;
     }
+
+    public void deleteAllComments(Long commentId){
+        List<LikeModel> likesForComment = likeRepository.findByCommentId(commentId);
+        likeRepository.deleteAll(likesForComment);
+    }
 }
