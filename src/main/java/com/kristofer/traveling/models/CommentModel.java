@@ -58,4 +58,5 @@ public class CommentModel {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
+    private boolean edit;
 }

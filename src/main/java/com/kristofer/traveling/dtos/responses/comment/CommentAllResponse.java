@@ -22,6 +22,8 @@ public class CommentAllResponse {
     private Long parentComment;
     private Integer likes;
     private Integer comments;
+    private boolean pressLike;
+    private boolean edit;
 
     public CommentAllResponse(CommentModel commentModel){
         this.id = commentModel.getId();
@@ -33,5 +35,21 @@ public class CommentAllResponse {
         this.parentComment = commentModel.getParentComment() != null ? commentModel.getParentComment().getId() : null;
         this.likes = commentModel.getLikes() != null ? commentModel.getLikes().size() : 0;
         this.comments = commentModel.getChildComments() != null ? commentModel.getChildComments().size() : 0;
+        this.pressLike = false;
+        this.edit = commentModel.isEdit();
+    }
+
+    public CommentAllResponse(CommentModel commentModel, boolean pressLike){
+        this.id = commentModel.getId();
+        this.phrase = commentModel.getPhrase();
+        this.img = commentModel.getImg();
+        this.datepublic = commentModel.getDatePublic();
+        this.userAllResponse = new UserAllResponse(commentModel.getCreator());
+        this.postId = commentModel.getPost() != null ? commentModel.getPost().getId() : null;
+        this.parentComment = commentModel.getParentComment() != null ? commentModel.getParentComment().getId() : null;
+        this.likes = commentModel.getLikes() != null ? commentModel.getLikes().size() : 0;
+        this.comments = commentModel.getChildComments() != null ? commentModel.getChildComments().size() : 0;
+        this.pressLike = pressLike;
+        this.edit = commentModel.isEdit();
     }
 }

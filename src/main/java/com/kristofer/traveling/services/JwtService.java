@@ -18,7 +18,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 
     private static final String SECRET_KEY = "a3904559510ce09199bea8d946e05b771bc51a471fd1fdaee4f1ff56c7f36308";
-    private static final long EXPIRATION_TIME = 604800000;
+    private static final long EXPIRATION_TIME = 7776000000L;
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
     }

@@ -48,6 +48,15 @@ public class LikeService {
         }
     }
 
+    public boolean pressLikeComment(UserModel user, CommentModel comment) {
+        Optional<LikeModel> existingLike = likeRepository.findByUserAndComment(user, comment);
+        if (existingLike.isPresent()) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public void toggleLikeComment(UserModel user, CommentModel comment){
         Optional<LikeModel> existingLike = likeRepository.findByUserAndComment(user, comment);
         if (existingLike.isPresent()) {
@@ -99,5 +108,10 @@ public class LikeService {
         }
 
         return topUsersWhoLikedPost;
+    }
+
+    public void deleteAllComments(Long commentId){
+        List<LikeModel> likesForComment = likeRepository.findByCommentId(commentId);
+        likeRepository.deleteAll(likesForComment);
     }
 }

@@ -1,5 +1,7 @@
 package com.kristofer.traveling.services;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,8 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.comment.CommentRequest;
 import com.kristofer.traveling.dtos.responses.comment.CommentAllResponse;
+import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.CommentModel;
+import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
@@ -30,14 +34,15 @@ public class CommentService {
     private final PostService postService;
     private final NotificationService notificationService;
 
-    public List<CommentAllResponse> findAll(){
+    public List<CommentAllResponse> findAll(String token){
         List<CommentModel> comments = commentRepository.findAll();
-        List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(x))
+        List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(
+            x, this.pressLike(token, x)))
         .collect(Collectors.toList());
         return commentAllResponse;
     }
 
-    public CommentAllResponse findById(Long id){
+    public CommentAllResponse findById(String token, Long id){
         CommentModel commentModel = this.findComment(id);
         CommentAllResponse comment = new CommentAllResponse(commentModel);
         return comment;
@@ -55,31 +60,36 @@ public class CommentService {
         return new CommentAllResponse(comment);
     }
 
-    public String delete(String token, Long id){
+    public String delete(String token, Long id) {
         CommentModel commentToDelete = this.verifyCommentExistId(id);
         this.verifyIdUser(token, commentToDelete.getCreator().getId());
-        if (commentToDelete.getParentComment() != null){
-            List<CommentModel> childComments = commentRepository.findByParentCommentId(commentToDelete.getId());
-            for (CommentModel childComment : childComments) {
-                // recursive call
-                delete(token, childComment.getId());
-            }
+    
+        likeService.deleteAllComments(id);
+        List<CommentModel> childComments = commentRepository.findByParentCommentId(id);
+        // recursively
+        for (CommentModel childComment : childComments) {
+            delete(token, childComment.getId());
         }
+    
         this.commentRepository.delete(commentToDelete);
-        return "Delete with sucess!";
+        return "Delete with success!";
     }
 
-    public List<CommentAllResponse> getPostComments(Long postId){
+    public List<CommentAllResponse> getPostComments(String token, Long postId){
         postService.findByIdPost(postId);
         List<CommentModel> comments = commentRepository.findByPostId(postId);
-        List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(x))
+        Collections.sort(comments, Comparator.comparing(CommentModel::getDatePublic).reversed());
+        List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(
+            x, this.pressLike(token, x)))
         .collect(Collectors.toList());
         return commentAllResponse;
     }
 
-    public List<CommentAllResponse> getChildComment(Long parentCommentId){
+    public List<CommentAllResponse> getChildComment(String token, Long parentCommentId){
         List<CommentModel> comments = commentRepository.findByParentCommentId(parentCommentId);
-        List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(x))
+        // Collections.sort(comments, Comparator.comparing(CommentModel::getDatePublic).reversed());
+        List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(
+            x, this.pressLike(token, x)))
         .collect(Collectors.toList());
         return commentAllResponse;
     }
@@ -101,6 +111,11 @@ public class CommentService {
         commentRepository.deleteAll(comments);
     }
 
+    public boolean pressLike(String token, CommentModel comment){
+        UserModel user = userService.userByToken(token);
+        return likeService.pressLikeComment(user, comment);
+    }
+
     private CommentModel updateDataComment(String token, CommentRequest request, Long id) {
         CommentModel commentModel = this.verifyCommentExistId(id);
         this.verifyRequestUpdate(request);
@@ -108,6 +123,7 @@ public class CommentService {
         commentModel.setImg(request.getImg());
         commentModel.setPhrase(request.getPhrase());
         commentModel.setDatePublic(request.getDatePublic());
+        commentModel.setEdit(true);
         return commentModel;
     }
 
@@ -132,6 +148,7 @@ public class CommentService {
             .phrase(request.getPhrase())
             .datePublic(request.getDatePublic())
             .creator(user)
+            .edit(false)
             .build();
         if (request.getParentComment() != null){
             CommentModel commentFather = this.verifyExistsComment(request);

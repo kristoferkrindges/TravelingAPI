@@ -26,6 +26,7 @@ public class PostAllResponse {
     private boolean pressLike;
     private boolean pressFavorite;
     private List<UserLikePost> usersLikes;
+    private boolean edit;
 
      public PostAllResponse(PostModel post){
         this.id = post.getId();
@@ -38,6 +39,7 @@ public class PostAllResponse {
         this.favorites = post.getFavorites() != null ? post.getFavorites().size() : 0;
         this.pressLike = false;
         this.pressFavorite = false;
+        this.edit = post.isEdit();
     }
 
     public PostAllResponse(PostModel post, boolean pressLike, boolean pressFavorite, List<UserLikePost> usersLikes){
@@ -51,6 +53,7 @@ public class PostAllResponse {
         this.favorites = post.getFavorites() != null ? post.getFavorites().size() : 0;
         this.pressLike = pressLike;
         this.pressFavorite = pressFavorite;
+        this.edit = post.isEdit();
         this.usersLikes = usersLikes;
 
     }
