@@ -19,6 +19,8 @@ public class NotificationAllResponse {
     private NotificationTypeEnum type;
     private boolean read;
 
+    public NotificationAllResponse(){}
+
     public NotificationAllResponse(NotificationModel notificationModel){
         this.id = notificationModel.getId();
         this.user = new UserAllResponse(notificationModel.getUser());

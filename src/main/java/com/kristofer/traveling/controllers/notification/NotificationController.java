@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +37,8 @@ public class NotificationController {
         return ResponseEntity.ok().body(notificationService.countUnreadNotifications(authorizationHeader));
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<String> markNotificationAsRead(@PathVariable("id") Long notificationId, @RequestHeader("Authorization") String authorizationHeader){
-        return ResponseEntity.ok().body(notificationService.markNotificationAsRead(authorizationHeader, notificationId));
+    @PostMapping()
+    public ResponseEntity<String> markNotificationAsRead(@RequestHeader("Authorization") String authorizationHeader, @RequestBody List<NotificationAllResponse> notifications){
+        return ResponseEntity.ok().body(notificationService.markNotificationsAsRead(authorizationHeader, notifications));
     }
 }

@@ -23,7 +23,8 @@ public class NotificationService {
     private final UserService userService;
 
     public void createNotification(UserModel user, NotificationTypeEnum type, UserModel creator, Long activityId){
-        var notification = NotificationModel.builder()
+        if(!(user.getId() == creator.getId())){
+            var notification = NotificationModel.builder()
             .user(user)
             .type(type)
             .activityId(activityId)
@@ -31,6 +32,7 @@ public class NotificationService {
             .read(false)
             .build();
         notificationRepository.save(notification);
+        }
     }
 
     public List<NotificationAllResponse> getAllNotificationsByUser(String token){
@@ -46,14 +48,31 @@ public class NotificationService {
         .collect(Collectors.toList());  
     }
 
-    public String markNotificationAsRead(String token, Long notificationId){
-        NotificationModel notification = notificationRepository.findById(notificationId)
-            .orElseThrow(() -> new ObjectNotFoundException("Notification with id " + notificationId + " not found"));
-        this.verifyIdUser(token, notification.getUser().getId());
-        notification.setRead(true);
-        notificationRepository.save(notification);
-        return "Read of Sucess!";
+    public String markNotificationsAsRead(String token, List<NotificationAllResponse> notifications) {
+        List<Long> notificationIds = notifications.stream()
+            .map(NotificationAllResponse::getId)
+            .collect(Collectors.toList());
+        
+        List<NotificationModel> notificationModels = notificationRepository.findAllById(notificationIds);
+        
+        for (NotificationModel notificationModel : notificationModels) {
+            this.verifyIdUser(token, notificationModel.getUser().getId());
+            notificationModel.setRead(true);
+        }
+        
+        notificationRepository.saveAll(notificationModels);
+        
+        return "Read of Success!";
     }
+
+    // public String markNotificationAsRead(String token, Long notificationId){
+    //     NotificationModel notification = notificationRepository.findById(notificationId)
+    //         .orElseThrow(() -> new ObjectNotFoundException("Notification with id " + notificationId + " not found"));
+    //     this.verifyIdUser(token, notification.getUser().getId());
+    //     notification.setRead(true);
+    //     notificationRepository.save(notification);
+    //     return "Read of Sucess!";
+    // }
 
     public long countUnreadNotifications(String token) {
         return notificationRepository.countByUserIdAndReadFalse(userService.userByToken(token).getId());
