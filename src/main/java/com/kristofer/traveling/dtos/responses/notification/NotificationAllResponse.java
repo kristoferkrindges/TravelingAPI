@@ -1,5 +1,7 @@
 package com.kristofer.traveling.dtos.responses.notification;
 
+import java.util.Date;
+
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.NotificationModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
@@ -18,6 +20,7 @@ public class NotificationAllResponse {
     private Long activityId;
     private NotificationTypeEnum type;
     private boolean read;
+    private Date time;
 
     public NotificationAllResponse(){}
 
@@ -28,5 +31,6 @@ public class NotificationAllResponse {
         this.activityId = notificationModel.getActivityId();
         this.type = notificationModel.getType();
         this.read = notificationModel.isRead();
+        this.time = notificationModel.getCreatedAt();
     }
 }

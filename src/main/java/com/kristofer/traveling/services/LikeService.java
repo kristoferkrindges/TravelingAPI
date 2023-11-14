@@ -114,4 +114,8 @@ public class LikeService {
         List<LikeModel> likesForComment = likeRepository.findByCommentId(commentId);
         likeRepository.deleteAll(likesForComment);
     }
+
+    public void deleteLikes(List<LikeModel> likes) {
+        likeRepository.deleteAll(likes);
+    }
 }

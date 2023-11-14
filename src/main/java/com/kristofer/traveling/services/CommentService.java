@@ -108,7 +108,16 @@ public class CommentService {
 
     public void deleteAllCommentsPosts(PostModel postModel) {
         List<CommentModel> comments = commentRepository.findByPost(postModel);
+        this.deleteLikesForComments(comments);
         commentRepository.deleteAll(comments);
+    }
+
+    public void deleteLikesForComments(List<CommentModel> comments) {
+        for (CommentModel comment : comments) {
+            if (comment.getLikes() != null && !comment.getLikes().isEmpty()) {
+                likeService.deleteLikes(comment.getLikes());
+            }
+        }
     }
 
     public boolean pressLike(String token, CommentModel comment){
