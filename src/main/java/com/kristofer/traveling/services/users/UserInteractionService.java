@@ -65,6 +65,7 @@ public class UserInteractionService {
     public List<UserAllResponse> getFollowingsOfUser(Long id, String token) {
         UserModel owner = userService.userByToken(token);
         List<UserAllResponse> followers = new ArrayList<>();
+
         for(UserModel user : followerService.getFollowersUser(id)){
             followers.add(new UserAllResponse(user, followerService.searchFollower(owner, user)));
         }

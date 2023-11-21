@@ -98,7 +98,7 @@ public class CommentService {
         UserModel user = userService.userByToken(token);
         CommentModel comment = this.verifyCommentExistId(commentId);
         likeService.toggleLikeComment(user, comment);
-        notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKEPOST, user, comment.getId());
+        notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKECOMMENT, user, comment.getId());
     }
 
     public List<UserAllResponse> getLikedCommentsUser(Long commentId, String token) {

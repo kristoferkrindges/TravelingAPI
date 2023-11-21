@@ -13,6 +13,7 @@ import com.kristofer.traveling.dtos.responses.user.UserLikePost;
 import com.kristofer.traveling.models.CommentModel;
 import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
+import com.kristofer.traveling.models.StorieModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.LikeRepository;
 import com.kristofer.traveling.services.users.UserService;
@@ -48,6 +49,15 @@ public class LikeService {
         }
     }
 
+    public boolean pressLikeStorie(UserModel user, StorieModel storie){
+        Optional<LikeModel> existingLike = likeRepository.findByUserAndStorie(user, storie);
+        if (existingLike.isPresent()) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public boolean pressLikeComment(UserModel user, CommentModel comment) {
         Optional<LikeModel> existingLike = likeRepository.findByUserAndComment(user, comment);
         if (existingLike.isPresent()) {
@@ -65,6 +75,19 @@ public class LikeService {
             var like = LikeModel.builder()
                 .user(user)
                 .comment(comment)
+                .build();
+            likeRepository.save(like);
+        }
+    }
+
+    public void toggleLikeStorie(UserModel user, StorieModel storie){
+        Optional<LikeModel> existingLike = likeRepository.findByUserAndStorie(user, storie);
+        if (existingLike.isPresent()) {
+            likeRepository.delete(existingLike.get());
+        }else{
+            var like = LikeModel.builder()
+                .user(user)
+                .storie(storie)
                 .build();
             likeRepository.save(like);
         }
@@ -95,6 +118,11 @@ public class LikeService {
 
     public void deleteAllLikesPosts(PostModel postModel) {
         List<LikeModel> likes = likeRepository.findByPost(postModel);
+        likeRepository.deleteAll(likes);
+    }
+
+    public void deleteAllLikesStories(StorieModel storieModel) {
+        List<LikeModel> likes = likeRepository.findByStorie(storieModel);
         likeRepository.deleteAll(likes);
     }
 
