@@ -38,6 +38,9 @@ public class LikeModel {
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private CommentModel comment;
+    @ManyToOne
+    @JoinColumn(name = "storie_id")
+    private StorieModel storie;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

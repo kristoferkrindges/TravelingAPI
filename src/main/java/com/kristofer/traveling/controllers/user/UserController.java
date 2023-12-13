@@ -58,9 +58,9 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<UserUpdateRequest> update(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserUpdateRequest request){
-        userService.update(authorizationHeader, request);
-        return ResponseEntity.ok().body(request);
+    public ResponseEntity<UserCheckResponse> update(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserUpdateRequest request){
+        UserModel user = userService.update(authorizationHeader, request);
+        return ResponseEntity.ok().body(new UserCheckResponse(user));
     }
 
     @PatchMapping(value = "/updatepassword")
@@ -70,15 +70,15 @@ public class UserController {
     }
 
     @PatchMapping(value = "/updatephoto")
-    public ResponseEntity<String> updatePhoto(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PhotoRequest request){
-        userService.updatePhoto(authorizationHeader, request);
-        return ResponseEntity.ok().body("Photo update with success!");
+    public ResponseEntity<UserCheckResponse> updatePhoto(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PhotoRequest request){
+        UserModel user = userService.updatePhoto(authorizationHeader, request);
+        return ResponseEntity.ok().body(new UserCheckResponse(user));
     }
 
     @PatchMapping(value = "/updatebanner")
-    public ResponseEntity<String> updateBanner(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PhotoRequest request){
-        userService.updateBanner(authorizationHeader, request);
-        return ResponseEntity.ok().body("Banner update with success!");
+    public ResponseEntity<UserCheckResponse> updateBanner(@RequestHeader("Authorization") String authorizationHeader, @RequestBody PhotoRequest request){
+        UserModel user = userService.updateBanner(authorizationHeader, request);
+        return ResponseEntity.ok().body(new UserCheckResponse(user));
     }
 
     @DeleteMapping()
@@ -126,13 +126,13 @@ public class UserController {
         return ResponseEntity.ok("Successfully favorite post!");
     }
 
-    @GetMapping(value = "/like")
-    public ResponseEntity<List<PostAllResponse>> allLikes(@RequestHeader("Authorization") String authorizationHeader){
-        return ResponseEntity.ok().body(userInteractionService.allLikesUser(authorizationHeader)); 
+    @GetMapping(value = "/likes/{id}")
+    public ResponseEntity<List<PostAllResponse>> allLikes(@PathVariable("id") String id, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.allLikesUser(id, authorizationHeader)); 
     }
-    @GetMapping(value = "/favorites")
-    public ResponseEntity<List<PostAllResponse>> allFavorites(@RequestHeader("Authorization") String authorizationHeader){
-        return ResponseEntity.ok().body(userInteractionService.allFavoritesUser(authorizationHeader)); 
+    @GetMapping(value = "/favorites/{id}")
+    public ResponseEntity<List<PostAllResponse>> allFavorites(@PathVariable("id") String id, @RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.allFavoritesUser(id, authorizationHeader)); 
     }
 
     @GetMapping(value = "/configuration")

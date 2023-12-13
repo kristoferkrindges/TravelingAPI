@@ -16,13 +16,29 @@ public class StorieAllResponse {
     private Long id;
     private String video;
     private Date datepublic;
+    private Integer likes;
+    private boolean pressLike;
     private UserAllResponse userAllResponse;
+    private boolean edit;
 
     public StorieAllResponse(StorieModel storie){
         this.id = storie.getId();
         this.video = storie.getVideo();
         this.datepublic = storie.getDatePublic();
+        this.likes = storie.getLikes() != null ? storie.getLikes().size() : 0;
+        this.pressLike = false;
         this.userAllResponse = new UserAllResponse(storie.getCreator());
+        this.edit = false;
+    }
+
+    public StorieAllResponse(StorieModel storie, boolean pressLike){
+        this.id = storie.getId();
+        this.video = storie.getVideo();
+        this.datepublic = storie.getDatePublic();
+        this.likes = storie.getLikes() != null ? storie.getLikes().size() : 0;
+        this.pressLike = pressLike;
+        this.userAllResponse = new UserAllResponse(storie.getCreator());
+        this.edit = false;
     }
 
 }

@@ -65,6 +65,7 @@ public class UserInteractionService {
     public List<UserAllResponse> getFollowingsOfUser(Long id, String token) {
         UserModel owner = userService.userByToken(token);
         List<UserAllResponse> followers = new ArrayList<>();
+
         for(UserModel user : followerService.getFollowersUser(id)){
             followers.add(new UserAllResponse(user, followerService.searchFollower(owner, user)));
         }
@@ -112,8 +113,8 @@ public class UserInteractionService {
         return postService.findByUserOwner(user.getId(), token);
     }
 
-    public List<PostAllResponse> allLikesUser(String token){
-        UserModel user = userService.userByToken(token);
+    public List<PostAllResponse> allLikesUser(String id, String token){
+        UserModel user = userService.findByAt(id);
         List<LikeModel> likes = likeService.getLikedUserPosts(user);
         List<PostModel> posts = likes.stream().map(LikeModel::getPost).collect(Collectors.toList());
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
@@ -122,8 +123,8 @@ public class UserInteractionService {
         return postAllResponse;
     }
 
-    public List<PostAllResponse> allFavoritesUser(String token){
-        UserModel user = userService.userByToken(token);
+    public List<PostAllResponse> allFavoritesUser(String id, String token){
+        UserModel user = userService.findByAt(id);
         List<FavoriteModel> favorites = favoriteService.getFavoriteUserPosts(user);
         List<PostModel> posts = favorites.stream().map(FavoriteModel::getPost).collect(Collectors.toList());
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(

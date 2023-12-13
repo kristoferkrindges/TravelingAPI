@@ -98,7 +98,7 @@ public class CommentService {
         UserModel user = userService.userByToken(token);
         CommentModel comment = this.verifyCommentExistId(commentId);
         likeService.toggleLikeComment(user, comment);
-        notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKEPOST, user, comment.getId());
+        notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKECOMMENT, user, comment.getId());
     }
 
     public List<UserAllResponse> getLikedCommentsUser(Long commentId, String token) {
@@ -108,7 +108,16 @@ public class CommentService {
 
     public void deleteAllCommentsPosts(PostModel postModel) {
         List<CommentModel> comments = commentRepository.findByPost(postModel);
+        this.deleteLikesForComments(comments);
         commentRepository.deleteAll(comments);
+    }
+
+    public void deleteLikesForComments(List<CommentModel> comments) {
+        for (CommentModel comment : comments) {
+            if (comment.getLikes() != null && !comment.getLikes().isEmpty()) {
+                likeService.deleteLikes(comment.getLikes());
+            }
+        }
     }
 
     public boolean pressLike(String token, CommentModel comment){

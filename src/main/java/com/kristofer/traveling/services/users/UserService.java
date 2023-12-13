@@ -61,24 +61,27 @@ public class UserService {
         return user;
     }
 
-    public void update(String token, UserUpdateRequest request){
+    public UserModel update(String token, UserUpdateRequest request){
         UserModel userUpdate = userByToken(token);
         this.validateValuesUpdate(request);
         this.validateAtIsEqual(userUpdate, request.getAt());
-        userRepository.save(this.updateData(userUpdate, request));
-        return;
+        UserModel newUser = this.updateData(userUpdate, request);
+        userRepository.save(newUser);
+        return newUser;
     }
 
-    public void updatePhoto(String token, PhotoRequest request){
+    public UserModel updatePhoto(String token, PhotoRequest request){
         UserModel userUpdate = userByToken(token);
         userUpdate.setPhoto(request.getImageUrl());
         userRepository.save(userUpdate);
+        return userUpdate;
     }
 
-    public void updateBanner(String token, PhotoRequest request){
+    public UserModel updateBanner(String token, PhotoRequest request){
         UserModel userUpdate = userByToken(token);
         userUpdate.setBanner(request.getImageUrl());
         userRepository.save(userUpdate);
+        return userUpdate;
     }
 
     public void delete(String token){

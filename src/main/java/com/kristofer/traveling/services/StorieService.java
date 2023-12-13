@@ -7,9 +7,14 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.storie.StorieRequest;
+import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.storie.StorieAllResponse;
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
+import com.kristofer.traveling.models.CommentModel;
+import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.StorieModel;
 import com.kristofer.traveling.models.UserModel;
+import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
 import com.kristofer.traveling.repositories.StorieRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
@@ -23,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class StorieService {
     private final StorieRepository storieRepository;
     private final UserService userService;
+    private final LikeService likeService;
+    private final NotificationService notificationService;
 
     public List<StorieAllResponse> findAll(){
         List<StorieModel> stories = storieRepository.findAll();
@@ -31,16 +38,40 @@ public class StorieService {
         return storieAllResponse;
     }
 
+    public List<StorieAllResponse> getStoriesByUserOrderedByDate(String at, String token) {
+        UserModel user = userService.findByAt(at);
+        List<StorieModel> stories = storieRepository.findByCreatorOrderByDatePublicDesc(user);
+        List<StorieAllResponse> storieAllResponse = stories.stream().map(x-> new StorieAllResponse(
+            x, this.pressLike(token, x)))
+        .collect(Collectors.toList());
+        return storieAllResponse;
+    }
+
+    public List<UserAllResponse> getUsersWithStoriesOrderedByLatestStory() {
+        List<UserModel> users = storieRepository.findAllUsersWithStoriesOrderByLatestStory();
+        List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x))
+        .collect(Collectors.toList());
+        return usersAllResponse;
+    }
+
+    public void toogleLikeComment(String token, Long storieId){
+        UserModel user = userService.userByToken(token);
+        StorieModel storie = this.verifyStorieExistId(storieId);
+        likeService.toggleLikeStorie(user, storie);
+        notificationService.createNotification(storie.getCreator(), NotificationTypeEnum.LIKESTORIE, user, storie.getId());
+    }
+
     public StorieAllResponse findById(Long id){
         StorieModel storieModel = this.findStorie(id);
         StorieAllResponse storie = new StorieAllResponse(storieModel);
         return storie;
     }
 
-    public StorieAllResponse insert(String token, StorieRequest request){
-        StorieModel storie = this.createdStorieModel(token, request);
+    public UserAllResponse insert(String token, StorieRequest request){
+        UserModel user = userService.userByToken(token);
+        StorieModel storie = this.createdStorieModel(user, request);
         storieRepository.save(storie);
-        return new StorieAllResponse(storie);
+        return new UserAllResponse(user);
     }
 
     public StorieAllResponse update(String token, StorieRequest request, Long id){
@@ -54,6 +85,11 @@ public class StorieService {
         this.verifyIdUser(token, storieModel.getCreator().getId());
         this.storieRepository.delete(storieModel);
         return "Delete with sucess!";
+    }
+
+    public boolean pressLike(String token, StorieModel storie){
+        UserModel user = userService.userByToken(token);
+        return likeService.pressLikeStorie(user, storie);
     }
 
     private StorieModel updateDataStorie(String token, StorieRequest request, Long id){
@@ -86,9 +122,8 @@ public class StorieService {
             ()-> new ObjectNotFoundException("Storie with id " + id + " not found"));
     }
 
-    private StorieModel createdStorieModel(String token, StorieRequest request){
+    private StorieModel createdStorieModel(UserModel user, StorieRequest request){
         this.verifyRequestInsert(request);
-        UserModel user = userService.userByToken(token);
         var storie = StorieModel.builder()
             .video(request.getVideo())
             .datePublic(request.getDatePublic())
