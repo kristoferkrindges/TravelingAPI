@@ -67,10 +67,11 @@ public class StorieService {
         return storie;
     }
 
-    public StorieAllResponse insert(String token, StorieRequest request){
-        StorieModel storie = this.createdStorieModel(token, request);
+    public UserAllResponse insert(String token, StorieRequest request){
+        UserModel user = userService.userByToken(token);
+        StorieModel storie = this.createdStorieModel(user, request);
         storieRepository.save(storie);
-        return new StorieAllResponse(storie);
+        return new UserAllResponse(user);
     }
 
     public StorieAllResponse update(String token, StorieRequest request, Long id){
@@ -121,9 +122,8 @@ public class StorieService {
             ()-> new ObjectNotFoundException("Storie with id " + id + " not found"));
     }
 
-    private StorieModel createdStorieModel(String token, StorieRequest request){
+    private StorieModel createdStorieModel(UserModel user, StorieRequest request){
         this.verifyRequestInsert(request);
-        UserModel user = userService.userByToken(token);
         var storie = StorieModel.builder()
             .video(request.getVideo())
             .datePublic(request.getDatePublic())

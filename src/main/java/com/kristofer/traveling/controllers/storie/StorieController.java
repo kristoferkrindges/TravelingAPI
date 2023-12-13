@@ -49,7 +49,7 @@ public class StorieController {
     }
 
     @PostMapping()
-    public ResponseEntity<StorieAllResponse> insert(@RequestHeader("Authorization") String authorizationHeader, @RequestBody StorieRequest request){
+    public ResponseEntity<UserAllResponse> insert(@RequestHeader("Authorization") String authorizationHeader, @RequestBody StorieRequest request){
         return ResponseEntity.ok().body(storieService.insert(authorizationHeader, request));
     }
     @PutMapping(value = "/{id}")
