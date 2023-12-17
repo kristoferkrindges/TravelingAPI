@@ -41,6 +41,8 @@ public class EventModel {
     private String address;
     private String zipCode;
     private String photo;
+    private String details;
+    private String price;
     @ManyToOne
     @JoinColumn(name="creator_id")
     private UserModel creator;

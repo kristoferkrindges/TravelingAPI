@@ -34,7 +34,8 @@ public class EventService {
     private final NotificationService notificationService;
 
     public List<EventResponse> findAll(String token){
-        List<EventModel> events = eventRepository.findAllUpcomingEventsOrderByEventDate();
+        // List<EventModel> events = eventRepository.findAllUpcomingEventsOrderByEventDate();
+        List<EventModel> events = eventRepository.findAllByOrderByCreatedAtDesc();
         List<EventResponse> eventsResponse = events.stream().map(x-> new EventResponse(
             x, this.pressAttend(token, x), attendService.findTop3UsersWhoAttendEvent(x.getId())))
         .collect(Collectors.toList());
@@ -97,8 +98,10 @@ public class EventService {
     public void toogleAttendEvent(String token, Long eventId){
         UserModel user = userService.userByToken(token);
         EventModel eventModel = this.verifyEventExistId(eventId);
-        attendService.toggleAttend(user, eventModel);
-        notificationService.createNotification(eventModel.getCreator(), NotificationTypeEnum.ATTENDEVENT, user, eventModel.getId());
+        Boolean verify = attendService.toggleAttend(user, eventModel);
+        if(verify){
+            notificationService.createNotification(eventModel.getCreator(), NotificationTypeEnum.ATTENDEVENT, user, eventModel.getId());
+        }
     }
 
     private LocalDate toLocalDate(Date date) {
@@ -112,7 +115,9 @@ public class EventService {
         eventModel.setPhoto(request.getPhoto());
         eventModel.setName(request.getName());
         eventModel.setEventDate(request.getEventDate());
+        eventModel.setDetails(request.getDetails());
         eventModel.setAddress(request.getAddress());
+        eventModel.setPrice(request.getPrice());
         eventModel.setZipCode(request.getZipCode());
         eventModel.setCity(request.getCity());
         eventModel.setEdit(true);
@@ -141,6 +146,8 @@ public class EventService {
             .city(request.getCity())
             .address(request.getAddress())
             .zipCode(request.getZipCode())
+            .price(request.getPrice())
+            .details(request.getDetails())
             .eventDate(request.getEventDate())
             .creator(user)
             .edit(false)
@@ -149,6 +156,9 @@ public class EventService {
     }
 
     private void verifyRequestInsert(EventRequest request){
+        if(request.getCreatorId() == null){
+            throw new ObjectNotNullException("Creator: Creator is required.");
+        }
         if(request.getName() == null){
             throw new ObjectNotNullException("Name: Name is required.");
         }

@@ -23,7 +23,9 @@ public class EventResponse {
     private String zipCode;
     private String photo;
     private Integer attends;
+    private String details;
     private boolean pressAttend;
+    private String price;
     private UserAllResponse userAllResponse;
     private List<UserLikePost> usersAttends;
     private boolean edit;
@@ -36,6 +38,8 @@ public class EventResponse {
         this.address = event.getAddress();
         this.zipCode = event.getZipCode();
         this.photo = event.getPhoto();
+        this.price = event.getPrice();
+        this.details = event.getDetails();
         this.attends = event.getAttend() != null ? event.getAttend().size() : 0;
         this.userAllResponse = new UserAllResponse(event.getCreator());
         this.pressAttend = false;
@@ -52,6 +56,8 @@ public class EventResponse {
         this.photo = event.getPhoto();
         this.attends = event.getAttend() != null ? event.getAttend().size() : 0;
         this.userAllResponse = new UserAllResponse(event.getCreator());
+        this.price = event.getPrice();
+        this.details = event.getDetails();
         this.pressAttend = pressAttend;
         this.usersAttends = usersAttends;
         this.edit = event.isEdit();

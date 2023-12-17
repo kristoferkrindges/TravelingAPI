@@ -92,15 +92,19 @@ public class UserInteractionService {
     public void toggleToLike(String token, Long postId){
         UserModel user = userService.userByToken(token);
         PostModel post = postService.findByIdPost(postId);
-        likeService.toggleLike(user, post);
-        notificationService.createNotification(post.getCreator(), NotificationTypeEnum.LIKEPOST, user, postId);
+        Boolean verify = likeService.toggleLike(user, post);
+        if(verify){
+            notificationService.createNotification(post.getCreator(), NotificationTypeEnum.LIKEPOST, user, postId);
+        }
     }
 
     public void toggleFavorite(String token, Long postId){
         UserModel user = userService.userByToken(token);
         PostModel post = postService.findByIdPost(postId);
-        favoriteService.toggleFavorite(user, post);
-        notificationService.createNotification(post.getCreator(), NotificationTypeEnum.FAVORITEPOST, user, postId);
+        Boolean verify = favoriteService.toggleFavorite(user, post);
+        if(verify){
+            notificationService.createNotification(post.getCreator(), NotificationTypeEnum.FAVORITEPOST, user, postId);
+        }
     }
 
     public void toggleDarkMode(String token){

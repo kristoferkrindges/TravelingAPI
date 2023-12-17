@@ -11,6 +11,6 @@ public interface EventRepository extends JpaRepository<EventModel, Long> {
     
     @Query("SELECT e FROM EventModel e WHERE e.eventDate > CURRENT_DATE ORDER BY e.eventDate ASC")
     List<EventModel> findAllUpcomingEventsOrderByEventDate();
-
+    List<EventModel> findAllByOrderByCreatedAtDesc();
     List<EventModel> findByCreatorId(Long userId);
 }

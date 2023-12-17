@@ -25,16 +25,18 @@ public class AttendService {
         attendRepository.deleteAll(event);
     }
 
-    public void toggleAttend(UserModel user, EventModel eventModel){
+    public boolean toggleAttend(UserModel user, EventModel eventModel){
         Optional<AttendModel> existingAttend = attendRepository.findByUserAndEvent(user, eventModel);
         if (existingAttend.isPresent()) {
             attendRepository.delete(existingAttend.get());
+            return false;
         }else{
             var attend = AttendModel.builder()
                 .user(user)
                 .event(eventModel)
                 .build();
             attendRepository.save(attend);
+            return true;
         }
     }
 

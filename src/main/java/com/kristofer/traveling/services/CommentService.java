@@ -97,8 +97,10 @@ public class CommentService {
     public void toogleLikeComment(String token, Long commentId){
         UserModel user = userService.userByToken(token);
         CommentModel comment = this.verifyCommentExistId(commentId);
-        likeService.toggleLikeComment(user, comment);
-        notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKECOMMENT, user, comment.getId());
+        Boolean verify = likeService.toggleLikeComment(user, comment);
+        if(verify){
+            notificationService.createNotification(comment.getCreator(), NotificationTypeEnum.LIKECOMMENT, user, comment.getId());
+        }
     }
 
     public List<UserAllResponse> getLikedCommentsUser(Long commentId, String token) {

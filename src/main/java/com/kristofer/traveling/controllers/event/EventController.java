@@ -50,15 +50,15 @@ public class EventController {
         return ResponseEntity.ok().body(eventService.insert(authorizationHeader, request));
     }
 
-    @PostMapping("/toogleAttend")
-    public ResponseEntity<String> toogleAttendEvent(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorizationHeader){
-        eventService.toogleAttendEvent(authorizationHeader, id);
-        return ResponseEntity.ok("Successfully attend!");
-    }
-
     @PutMapping(value = "/{id}")
     public ResponseEntity<EventResponse> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id,  @RequestBody EventRequest request){
         return ResponseEntity.ok().body(eventService.update(authorizationHeader, request, id));
+    }
+
+    @PostMapping("/toogleAttend/{id}")
+    public ResponseEntity<String> toogleAttendEvent(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorizationHeader){
+        eventService.toogleAttendEvent(authorizationHeader, id);
+        return ResponseEntity.ok("Successfully attend!");
     }
 
     @DeleteMapping(value = "/{id}")

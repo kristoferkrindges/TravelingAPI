@@ -18,5 +18,7 @@ public class EventRequest {
     private String address;
     private String zipCode;
     private String photo;
+    private String details;
+    private String price;
     private Long creatorId;
 }
