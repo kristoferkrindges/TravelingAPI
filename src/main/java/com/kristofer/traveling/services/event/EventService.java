@@ -1,8 +1,10 @@
 package com.kristofer.traveling.services.event;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -12,10 +14,13 @@ import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.event.EventRequest;
 import com.kristofer.traveling.dtos.responses.event.EventResponse;
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.EventModel;
+import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
 import com.kristofer.traveling.repositories.EventRepository;
+import com.kristofer.traveling.services.FollowerService;
 import com.kristofer.traveling.services.NotificationService;
 import com.kristofer.traveling.services.attend.AttendService;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
@@ -32,6 +37,7 @@ public class EventService {
     private final UserService userService;
     private final AttendService attendService;
     private final NotificationService notificationService;
+    private final FollowerService followerService;
 
     public List<EventResponse> findAll(String token){
         // List<EventModel> events = eventRepository.findAllUpcomingEventsOrderByEventDate();
@@ -61,18 +67,28 @@ public class EventService {
     }
 
     public List<EventResponse> findEventsNowMonth(String token) {
-        LocalDate currentDate = LocalDate.now();
+        LocalDateTime currentDate = LocalDateTime.now();
         Month currentMonth = currentDate.getMonth();
+        
         List<EventModel> events = eventRepository.findAllUpcomingEventsOrderByEventDate();
         events = events.stream()
-                .filter(event -> toLocalDate(event.getEventDate()).getMonth() == currentMonth)
+                .filter(event -> event.getEventDate().getMonth() == currentMonth)
                 .collect(Collectors.toList());
+        
         List<EventResponse> eventsResponse = events.stream()
                 .map(x -> new EventResponse(
                         x, this.pressAttend(token, x), attendService.findTop3UsersWhoAttendEvent(x.getId())))
                 .collect(Collectors.toList());
-
+    
         return eventsResponse;
+    }
+
+    public List<UserAllResponse> findUsersEvent(String token, Long eventId){
+        List<UserModel> users = attendService.findUsersByEventId(eventId);
+        UserModel userOwner = userService.userByToken(token);
+        List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x, followerService.searchFollower(userOwner, x)))
+        .collect(Collectors.toList());
+        return usersAllResponse;
     }
 
     public EventResponse insert(String token, EventRequest request){
@@ -104,7 +120,7 @@ public class EventService {
         }
     }
 
-    private LocalDate toLocalDate(Date date) {
+    public static LocalDate toLocalDate(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
@@ -114,9 +130,10 @@ public class EventService {
         this.verifyIdUser(token, eventModel.getCreator().getId());
         eventModel.setPhoto(request.getPhoto());
         eventModel.setName(request.getName());
-        eventModel.setEventDate(request.getEventDate());
+        eventModel.setEventDate(this.convertStringToDateTime(request.getEventDate()));
         eventModel.setDetails(request.getDetails());
         eventModel.setAddress(request.getAddress());
+        eventModel.setType(request.getType());
         eventModel.setPrice(request.getPrice());
         eventModel.setZipCode(request.getZipCode());
         eventModel.setCity(request.getCity());
@@ -146,13 +163,19 @@ public class EventService {
             .city(request.getCity())
             .address(request.getAddress())
             .zipCode(request.getZipCode())
+            .type(request.getType())
             .price(request.getPrice())
             .details(request.getDetails())
-            .eventDate(request.getEventDate())
+            .eventDate(this.convertStringToDateTime(request.getEventDate()))
             .creator(user)
             .edit(false)
             .build();
         return event;
+    }
+
+    private LocalDateTime convertStringToDateTime(String date){
+        LocalDateTime eventDate = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        return eventDate;
     }
 
     private void verifyRequestInsert(EventRequest request){
@@ -170,6 +193,9 @@ public class EventService {
         }
         if(request.getZipCode() == null){
             throw new ObjectNotNullException("Zip Code: Zip Code is required.");
+        }
+        if(request.getType() == null){
+            throw new ObjectNotNullException("Type: Type is required.");
         }
     }
 

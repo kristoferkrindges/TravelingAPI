@@ -14,4 +14,5 @@ public interface AttendRepository extends JpaRepository<AttendModel, Long>{
     List<AttendModel> findByEvent(EventModel event);
     List<AttendModel> findTop3ByEventIdOrderByCreatedAtAsc(Long eventId);
     Optional<AttendModel> findByUserAndEvent(UserModel user, EventModel event);
+    List<AttendModel> findByEventId(Long eventId);
 }

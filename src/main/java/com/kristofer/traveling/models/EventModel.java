@@ -1,5 +1,6 @@
 package com.kristofer.traveling.models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,12 +37,13 @@ public class EventModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Date eventDate;
+    private LocalDateTime eventDate;
     private String city;
     private String address;
     private String zipCode;
     private String photo;
     private String details;
+    private String type;
     private String price;
     @ManyToOne
     @JoinColumn(name="creator_id")

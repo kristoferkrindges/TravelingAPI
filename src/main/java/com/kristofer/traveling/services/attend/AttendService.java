@@ -20,6 +20,13 @@ import lombok.RequiredArgsConstructor;
 public class AttendService {
     private final AttendRepository attendRepository;
 
+    public List<UserModel> findUsersByEventId(Long eventId) {
+        List<AttendModel> attendList = attendRepository.findByEventId(eventId);
+        return attendList.stream()
+                .map(AttendModel::getUser)
+                .toList();
+    }
+
     public void deleteAllAttendEvents(EventModel eventModel) {
         List<AttendModel> event = attendRepository.findByEvent(eventModel);
         attendRepository.deleteAll(event);

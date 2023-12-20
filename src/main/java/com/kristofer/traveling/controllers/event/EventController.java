@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kristofer.traveling.dtos.requests.event.EventRequest;
 import com.kristofer.traveling.dtos.responses.event.EventResponse;
+import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.services.event.EventService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,11 @@ public class EventController {
     @GetMapping(value = "/nowMonth")
     public ResponseEntity<List<EventResponse>> findEventsNowMonth(@RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(eventService.findEventsNowMonth(authorizationHeader));
+    }
+
+    @GetMapping(value = "/users/{id}")
+    public ResponseEntity<List<UserAllResponse>> findUsersEvent(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
+        return ResponseEntity.ok().body(eventService.findUsersEvent(authorizationHeader, id));
     }
 
     @PostMapping()

@@ -13,12 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventRequest {
     private String name;
-    private Date eventDate;
+    private String eventDate;
     private String city;
     private String address;
     private String zipCode;
     private String photo;
     private String details;
+    private String type;
     private String price;
     private Long creatorId;
 }

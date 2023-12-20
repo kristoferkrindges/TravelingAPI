@@ -1,5 +1,6 @@
 package com.kristofer.traveling.dtos.responses.event;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import lombok.Data;
 public class EventResponse {
     private Long id;
     private String name;
-    private Date eventDate;
+    private LocalDateTime eventDate;
     private String city;
     private String address;
     private String zipCode;
@@ -26,6 +27,7 @@ public class EventResponse {
     private String details;
     private boolean pressAttend;
     private String price;
+    private String type;
     private UserAllResponse userAllResponse;
     private List<UserLikePost> usersAttends;
     private boolean edit;
@@ -40,6 +42,7 @@ public class EventResponse {
         this.photo = event.getPhoto();
         this.price = event.getPrice();
         this.details = event.getDetails();
+        this.type = event.getType();
         this.attends = event.getAttend() != null ? event.getAttend().size() : 0;
         this.userAllResponse = new UserAllResponse(event.getCreator());
         this.pressAttend = false;
@@ -54,6 +57,7 @@ public class EventResponse {
         this.address = event.getAddress();
         this.zipCode = event.getZipCode();
         this.photo = event.getPhoto();
+        this.type = event.getType();
         this.attends = event.getAttend() != null ? event.getAttend().size() : 0;
         this.userAllResponse = new UserAllResponse(event.getCreator());
         this.price = event.getPrice();
