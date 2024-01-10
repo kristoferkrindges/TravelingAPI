@@ -57,6 +57,11 @@ public class UserController {
         return ResponseEntity.ok().body(new UserCheckResponse(user));
     }
 
+    @GetMapping(value = "/followersRandom")
+    public ResponseEntity<List<UserAllResponse>> findRandomUsersNotFollowing(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(userInteractionService.findRandomUsersNotFollowing(authorizationHeader));
+    }
+
     @PutMapping()
     public ResponseEntity<UserCheckResponse> update(@RequestHeader("Authorization") String authorizationHeader, @RequestBody UserUpdateRequest request){
         UserModel user = userService.update(authorizationHeader, request);

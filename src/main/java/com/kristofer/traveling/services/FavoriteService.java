@@ -23,16 +23,18 @@ public class FavoriteService {
     private final UserService userService;
     private final FollowerService followerService;
 
-    public void toggleFavorite(UserModel user, PostModel post){
+    public boolean toggleFavorite(UserModel user, PostModel post){
         Optional<FavoriteModel> existingFavorite = favoriteRepository.findByUserAndPost(user, post);
         if(existingFavorite.isPresent()){
             favoriteRepository.delete(existingFavorite.get());
+            return false;
         }else{
             var favorite = FavoriteModel.builder()
                 .user(user)
                 .post(post)
                 .build();
             favoriteRepository.save(favorite);
+            return true;
         }
     }
 

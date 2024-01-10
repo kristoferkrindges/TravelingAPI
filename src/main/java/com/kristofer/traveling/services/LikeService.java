@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserLikePost;
 import com.kristofer.traveling.models.CommentModel;
@@ -27,16 +26,18 @@ public class LikeService {
     private final FollowerService followerService;
     private final UserService userService;
 
-    public void toggleLike(UserModel user, PostModel post){
+    public boolean toggleLike(UserModel user, PostModel post){
         Optional<LikeModel> existingLike = likeRepository.findByUserAndPost(user, post);
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
+            return false;
         }else{
             var like = LikeModel.builder()
                 .user(user)
                 .post(post)
                 .build();
             likeRepository.save(like);
+            return true;
         }
     }
 
@@ -67,29 +68,33 @@ public class LikeService {
         }
     }
 
-    public void toggleLikeComment(UserModel user, CommentModel comment){
+    public boolean toggleLikeComment(UserModel user, CommentModel comment){
         Optional<LikeModel> existingLike = likeRepository.findByUserAndComment(user, comment);
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
+            return false;
         }else{
             var like = LikeModel.builder()
                 .user(user)
                 .comment(comment)
                 .build();
             likeRepository.save(like);
+            return true;
         }
     }
 
-    public void toggleLikeStorie(UserModel user, StorieModel storie){
+    public boolean toggleLikeStorie(UserModel user, StorieModel storie){
         Optional<LikeModel> existingLike = likeRepository.findByUserAndStorie(user, storie);
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
+            return false;
         }else{
             var like = LikeModel.builder()
                 .user(user)
                 .storie(storie)
                 .build();
             likeRepository.save(like);
+            return true;
         }
     }
     

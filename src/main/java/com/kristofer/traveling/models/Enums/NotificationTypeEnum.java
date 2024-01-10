@@ -8,6 +8,7 @@ public enum NotificationTypeEnum {
     REPLYCOMMENT,
     FOLLOW,
     MENTIONED,
-    FAVORITEPOST
+    FAVORITEPOST,
+    ATTENDEVENT
 }
 

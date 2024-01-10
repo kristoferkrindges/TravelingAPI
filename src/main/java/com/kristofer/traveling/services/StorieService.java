@@ -54,11 +54,13 @@ public class StorieService {
         return usersAllResponse;
     }
 
-    public void toogleLikeComment(String token, Long storieId){
+    public void toogleLikeStorie(String token, Long storieId){
         UserModel user = userService.userByToken(token);
         StorieModel storie = this.verifyStorieExistId(storieId);
-        likeService.toggleLikeStorie(user, storie);
-        notificationService.createNotification(storie.getCreator(), NotificationTypeEnum.LIKESTORIE, user, storie.getId());
+        Boolean verify = likeService.toggleLikeStorie(user, storie);
+        if(verify){
+            notificationService.createNotification(storie.getCreator(), NotificationTypeEnum.LIKESTORIE, user, storie.getId());
+        }
     }
 
     public StorieAllResponse findById(Long id){

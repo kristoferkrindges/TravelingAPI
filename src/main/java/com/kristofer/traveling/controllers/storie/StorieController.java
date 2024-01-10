@@ -63,7 +63,7 @@ public class StorieController {
 
     @PostMapping("/like/{id}")
     public ResponseEntity<String> toggleLike(@PathVariable("id") Long storieId, @RequestHeader("Authorization") String authorizationHeader){
-        storieService.toogleLikeComment(authorizationHeader, storieId);
+        storieService.toogleLikeStorie(authorizationHeader, storieId);
         return ResponseEntity.ok("Successfully like storie!");
     }
 }
