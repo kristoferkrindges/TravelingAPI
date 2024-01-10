@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -89,6 +90,22 @@ public class EventService {
         List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x, followerService.searchFollower(userOwner, x)))
         .collect(Collectors.toList());
         return usersAllResponse;
+    }
+
+    public List<EventResponse> findRandomEvents(String token) {
+        List<EventModel> allEvents = eventRepository.findAll();
+
+        List<EventResponse> eventsResponse = allEvents.stream().map(x-> new EventResponse(
+            x, this.pressAttend(token, x), attendService.findTop3UsersWhoAttendEvent(x.getId())))
+        .collect(Collectors.toList());
+        
+        Random random = new Random();
+        int numberOfRandomEvents = Math.min(2, allEvents.size());
+        return random.ints(0, eventsResponse.size())
+                .distinct()
+                .limit(numberOfRandomEvents)
+                .mapToObj(eventsResponse::get)
+                .collect(Collectors.toList());
     }
 
     public EventResponse insert(String token, EventRequest request){

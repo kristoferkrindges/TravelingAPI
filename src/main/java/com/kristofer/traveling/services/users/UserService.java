@@ -44,6 +44,11 @@ public class UserService {
         return userAllResponse;
     }
 
+    public List<UserModel> findAllUserModel(){
+        List<UserModel> users = userRepository.findAll();
+        return users;
+    }
+
     public UserModel findById(Long id){
         Optional<UserModel> obj = userRepository.findById(id);
         return obj.orElseThrow(

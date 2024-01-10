@@ -2,6 +2,8 @@ package com.kristofer.traveling.services.users;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -142,5 +144,26 @@ public class UserInteractionService {
         return configurationService.getAllConfigurationsUser(user.getId());
     }
 
+    public List<UserAllResponse> findRandomUsersNotFollowing(String token) {
+        UserModel userToken = userService.userByToken(token);
+        List<UserModel> notFollowingUsers = userService.findAllUserModel().stream()
+                .filter(user -> user.getId() != userToken.getId() &&  !followerService.searchFollower(userToken, user))
+                .collect(Collectors.toList());
+
+        List<UserAllResponse> userAllResponse = notFollowingUsers.stream().map(x-> new UserAllResponse(x))
+        .collect(Collectors.toList());
+
+        if (notFollowingUsers.size() < 1) {
+            return List.of();
+        }
+        
+        Random random = new Random();
+        int numberOfRandomUsers = Math.min(2, notFollowingUsers.size());
+        return random.ints(0, userAllResponse.size())
+                .distinct()
+                .limit(numberOfRandomUsers)
+                .mapToObj(userAllResponse::get)
+                .collect(Collectors.toList());
+    }
     
 }

@@ -41,6 +41,11 @@ public class EventController {
         return ResponseEntity.ok().body(eventService.findMyEventsAttend(authorizationHeader));
     }
 
+    @GetMapping(value = "/randoms")
+    public ResponseEntity<List<EventResponse>> findRandomEvents(@RequestHeader("Authorization") String authorizationHeader){
+        return ResponseEntity.ok().body(eventService.findRandomEvents(authorizationHeader));
+    }
+
     @GetMapping(value = "/nowMonth")
     public ResponseEntity<List<EventResponse>> findEventsNowMonth(@RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(eventService.findEventsNowMonth(authorizationHeader));
