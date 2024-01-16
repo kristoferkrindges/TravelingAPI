@@ -12,6 +12,7 @@ import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowingRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -40,7 +41,14 @@ public class FollowingService {
     public String delete(UserModel follower, UserModel following){
         return this.deleteBothTables(follower, following);
     }
+
+    @Transactional
+    public void removeAllFollowingsForUser(UserModel user) {
+        List<FollowingModel> followings = followingRepository.findByFollowerOrFollowing(user, user);
+        followingRepository.deleteAll(followings);
+    }
     
+
     private String deleteBothTables(UserModel follower, UserModel following) {
         this.deleteFollowing(follower, following);
         return "Deleted with sucess!";

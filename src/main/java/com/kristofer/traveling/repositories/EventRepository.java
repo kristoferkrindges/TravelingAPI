@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.kristofer.traveling.models.EventModel;
+import com.kristofer.traveling.models.UserModel;
 
 public interface EventRepository extends JpaRepository<EventModel, Long> {
     
@@ -13,4 +14,5 @@ public interface EventRepository extends JpaRepository<EventModel, Long> {
     List<EventModel> findAllUpcomingEventsOrderByEventDate();
     List<EventModel> findAllByOrderByCreatedAtDesc();
     List<EventModel> findByCreatorId(Long userId);
+    List<EventModel> findByCreator(UserModel creator);
 }

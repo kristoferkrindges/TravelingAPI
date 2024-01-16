@@ -92,20 +92,44 @@ public class EventService {
         return usersAllResponse;
     }
 
+    // public List<EventResponse> findRandomEvents(String token) {
+    //     List<EventModel> allEvents = eventRepository.findAll();
+
+    //     List<EventResponse> eventsResponse = allEvents.stream().map(x-> new EventResponse(
+    //         x, this.pressAttend(token, x), attendService.findTop3UsersWhoAttendEvent(x.getId())))
+    //     .collect(Collectors.toList());
+        
+    //     Random random = new Random();
+    //     int numberOfRandomEvents = Math.min(2, allEvents.size());
+    //     return random.ints(0, eventsResponse.size())
+    //             .distinct()
+    //             .limit(numberOfRandomEvents)
+    //             .mapToObj(eventsResponse::get)
+    //             .collect(Collectors.toList());
+    // }
+
     public List<EventResponse> findRandomEvents(String token) {
         List<EventModel> allEvents = eventRepository.findAll();
-
-        List<EventResponse> eventsResponse = allEvents.stream().map(x-> new EventResponse(
-            x, this.pressAttend(token, x), attendService.findTop3UsersWhoAttendEvent(x.getId())))
-        .collect(Collectors.toList());
-        
+    
+        if (allEvents.isEmpty()) {
+            return List.of();
+        }
+    
+        List<EventResponse> eventsResponse = allEvents.stream()
+                .map(x -> new EventResponse(
+                        x, this.pressAttend(token, x), attendService.findTop3UsersWhoAttendEvent(x.getId())))
+                .collect(Collectors.toList());
+    
         Random random = new Random();
         int numberOfRandomEvents = Math.min(2, allEvents.size());
-        return random.ints(0, eventsResponse.size())
+    
+        List<EventResponse> randomEvents = random.ints(0, eventsResponse.size())
                 .distinct()
                 .limit(numberOfRandomEvents)
                 .mapToObj(eventsResponse::get)
                 .collect(Collectors.toList());
+    
+        return randomEvents;
     }
 
     public EventResponse insert(String token, EventRequest request){
@@ -126,6 +150,12 @@ public class EventService {
         attendService.deleteAllAttendEvents(eventModel);
         this.eventRepository.delete(eventModel);
         return "Delete with sucess!";
+    }
+
+    public void deleteAllEventsUser(UserModel user){
+        List<EventModel> events = eventRepository.findByCreator(user);
+        eventRepository.deleteAll(events);
+        
     }
 
     public void toogleAttendEvent(String token, Long eventId){

@@ -1,5 +1,7 @@
 package com.kristofer.traveling.services.users;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -72,11 +74,16 @@ public class AuthenticationService {
             .at(request.getAt())
             .photo(request.getPhoto())
             .banner(request.getBanner())
-            .birthdate(request.getBirthdate())
+            .birthdate(this.convertStringToDateTime(request.getBirthdate()))
             .password(passwordEncoder.encode(request.getPassword()))
             .role(Role.USER)
             .build();
         return user;
+    }
+
+    private LocalDateTime convertStringToDateTime(String date){
+        LocalDateTime eventDate = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        return eventDate;
     }
 
     private void validateValuesUpdate(RegisterRequest request){

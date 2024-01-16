@@ -6,17 +6,19 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.ConfigurationModel;
 import com.kristofer.traveling.models.FavoriteModel;
-import com.kristofer.traveling.models.FollowerModel;
 import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
+import com.kristofer.traveling.repositories.UserRepository;
 import com.kristofer.traveling.services.ConfigurationService;
 import com.kristofer.traveling.services.FavoriteService;
 import com.kristofer.traveling.services.FollowerService;
@@ -24,6 +26,9 @@ import com.kristofer.traveling.services.FollowingService;
 import com.kristofer.traveling.services.LikeService;
 import com.kristofer.traveling.services.NotificationService;
 import com.kristofer.traveling.services.PostService;
+import com.kristofer.traveling.services.event.EventService;
+import com.kristofer.traveling.services.exceptions.DatabaseException;
+import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +43,9 @@ public class UserInteractionService {
     private final FavoriteService favoriteService;
     private final NotificationService notificationService;
     private final ConfigurationService configurationService;
+    private final EventService eventService;
+
+    private final UserRepository userRepository;
 
     public String processFollow(String token, Long followId){
         UserModel owner = userService.userByToken(token);
@@ -144,26 +152,70 @@ public class UserInteractionService {
         return configurationService.getAllConfigurationsUser(user.getId());
     }
 
+    // public List<UserAllResponse> findRandomUsersNotFollowing(String token) {
+    //     UserModel userToken = userService.userByToken(token);
+    //     List<UserModel> notFollowingUsers = userService.findAllUserModel().stream()
+    //             .filter(user -> user.getId() != userToken.getId() &&  !followerService.searchFollower(userToken, user))
+    //             .collect(Collectors.toList());
+
+    //     List<UserAllResponse> userAllResponse = notFollowingUsers.stream().map(x-> new UserAllResponse(x))
+    //     .collect(Collectors.toList());
+
+    //     if (notFollowingUsers.size() < 1) {
+    //         return List.of();
+    //     }
+        
+    //     Random random = new Random();
+    //     int numberOfRandomUsers = Math.min(2, notFollowingUsers.size());
+    //     return random.ints(0, userAllResponse.size())
+    //             .distinct()
+    //             .limit(numberOfRandomUsers)
+    //             .mapToObj(userAllResponse::get)
+    //             .collect(Collectors.toList());
+    // }
+
     public List<UserAllResponse> findRandomUsersNotFollowing(String token) {
         UserModel userToken = userService.userByToken(token);
         List<UserModel> notFollowingUsers = userService.findAllUserModel().stream()
-                .filter(user -> user.getId() != userToken.getId() &&  !followerService.searchFollower(userToken, user))
+                .filter(user -> user.getId() != userToken.getId() && !followerService.searchFollower(userToken, user))
                 .collect(Collectors.toList());
-
-        List<UserAllResponse> userAllResponse = notFollowingUsers.stream().map(x-> new UserAllResponse(x))
-        .collect(Collectors.toList());
-
+    
         if (notFollowingUsers.size() < 1) {
             return List.of();
         }
-        
+    
+        List<UserAllResponse> userAllResponse = notFollowingUsers.stream()
+                .map(UserAllResponse::new)
+                .collect(Collectors.toList());
+    
         Random random = new Random();
         int numberOfRandomUsers = Math.min(2, notFollowingUsers.size());
-        return random.ints(0, userAllResponse.size())
+        
+        List<UserAllResponse> randomUsers = random.ints(0, userAllResponse.size())
                 .distinct()
                 .limit(numberOfRandomUsers)
                 .mapToObj(userAllResponse::get)
                 .collect(Collectors.toList());
-    }
     
+        return randomUsers;
+    }
+
+    public void delete(String token){
+        UserModel user = userService.userByToken(token);
+        followingService.removeAllFollowingsForUser(user);
+        followerService.removeAllFollowersForUser(user);
+        notificationService.deletAllNotificationsByUser(user);
+        likeService.deleteAllLikesUser(user);
+        favoriteService.deleteAllFavoritesUser(user);
+        eventService.deleteAllEventsUser(user);
+        configurationService.deletConfigurationUser(user.getId());
+        try {
+            userRepository.deleteById(user.getId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new ObjectNotFoundException("User with id " + user.getId() + " not found");
+        }catch(DataIntegrityViolationException e){
+            throw new DatabaseException(e.getMessage());
+        }
+    }
+
 }

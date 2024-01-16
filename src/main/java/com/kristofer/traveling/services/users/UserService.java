@@ -1,5 +1,7 @@
 package com.kristofer.traveling.services.users;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,7 +19,6 @@ import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.UserRepository;
 import com.kristofer.traveling.services.JwtService;
-import com.kristofer.traveling.services.exceptions.DatabaseException;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
@@ -36,6 +37,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     public List<UserAllResponse> findAll(){
         List<UserModel> users = userRepository.findAll();
@@ -89,16 +91,19 @@ public class UserService {
         return userUpdate;
     }
 
-    public void delete(String token){
-        UserModel user = userByToken(token);
-        try {
-            userRepository.deleteById(user.getId());
-        } catch (EmptyResultDataAccessException e) {
-            throw new ObjectNotFoundException("User with id " + user.getId() + " not found");
-        }catch(DataIntegrityViolationException e){
-            throw new DatabaseException(e.getMessage());
-        }
-    }
+    // public void delete(String token){
+    //     UserModel user = userByToken(token);
+    //     configurationService.deletConfigurationUser(user.getId());
+    //     followingService.removeAllFollowingsForUser(user);
+    //     notificationService.deletAllNotificationsByUser(user.getId());
+    //     try {
+    //         userRepository.deleteById(user.getId());
+    //     } catch (EmptyResultDataAccessException e) {
+    //         throw new ObjectNotFoundException("User with id " + user.getId() + " not found");
+    //     }catch(DataIntegrityViolationException e){
+    //         throw new DatabaseException(e.getMessage());
+    //     }
+    // }
 
     public void updatePassword(String token, PasswordsRequest obj){
         UserModel user = userByToken(token);
@@ -122,10 +127,17 @@ public class UserService {
     }
 
     private UserModel updateData(UserModel userUpdate, UserUpdateRequest request){
+        // birthDate
+        userUpdate.setBirthdate(this.convertStringToDateTime(request.getBirthDate()));
         userUpdate.setAt(request.getAt());
         userUpdate.setFirstname(request.getFirstname());
         userUpdate.setLastname(request.getLastname());
         return userUpdate;
+    }
+
+    private LocalDateTime convertStringToDateTime(String date){
+        LocalDateTime eventDate = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        return eventDate;
     }
 
     private void validateValuesUpdate(UserUpdateRequest request){

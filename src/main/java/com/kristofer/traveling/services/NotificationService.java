@@ -14,6 +14,7 @@ import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
 import com.kristofer.traveling.services.users.UserService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -76,6 +77,13 @@ public class NotificationService {
 
     public long countUnreadNotifications(String token) {
         return notificationRepository.countByUserIdAndReadFalse(userService.userByToken(token).getId());
+    }
+
+    @Transactional
+    public void deletAllNotificationsByUser(UserModel user){
+        List<NotificationModel> notificationsModel = notificationRepository.findByCreatorOrUser(user, user);
+        notificationRepository.deleteAll(notificationsModel);
+        
     }
 
     private void verifyIdUser(String token, Long id){

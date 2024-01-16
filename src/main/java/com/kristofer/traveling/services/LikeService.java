@@ -131,6 +131,11 @@ public class LikeService {
         likeRepository.deleteAll(likes);
     }
 
+    public void deleteAllLikesUser(UserModel userModel) {
+        List<LikeModel> likes = likeRepository.findByUser(userModel);
+        likeRepository.deleteAll(likes);
+    }
+
     public List<UserLikePost> findTop3UsersWhoLikedPost(Long postId) {
         List<LikeModel> topLikes = likeRepository.findTop3ByPostIdOrderByCreatedAtAsc(postId);
         List<UserLikePost> topUsersWhoLikedPost = new ArrayList<>();

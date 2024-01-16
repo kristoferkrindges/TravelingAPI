@@ -66,4 +66,9 @@ public class FavoriteService {
         List<FavoriteModel> favorites = favoriteRepository.findByPost(postModel);
         favoriteRepository.deleteAll(favorites);
     }
+
+    public void deleteAllFavoritesUser(UserModel userModel) {
+        List<FavoriteModel> favorites = favoriteRepository.findByUser(userModel);
+        favoriteRepository.deleteAll(favorites);
+    }
 }

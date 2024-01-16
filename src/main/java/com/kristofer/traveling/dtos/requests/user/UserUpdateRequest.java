@@ -13,4 +13,5 @@ public class UserUpdateRequest {
     private String firstname;
     private String lastname;
     private String at;
+    private String birthDate;
 }

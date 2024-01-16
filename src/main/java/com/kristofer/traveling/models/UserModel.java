@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,17 +48,17 @@ public class UserModel implements UserDetails{
     private String password;
     private String photo;
     private String banner;
-    private Date birthdate;
+    private LocalDateTime birthdate;
     @Enumerated(EnumType.STRING)
     private Role role;
     @JsonIgnore
     @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostModel> posts = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FollowerModel> followers = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "following", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FollowingModel> following = new ArrayList<>();
     @JsonIgnore
     @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -69,8 +70,11 @@ public class UserModel implements UserDetails{
     @OneToMany(mappedBy = "user")
     private List<LikeModel> likes = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NotificationModel> notifications = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<CommentModel> comments = new ArrayList<>();
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
