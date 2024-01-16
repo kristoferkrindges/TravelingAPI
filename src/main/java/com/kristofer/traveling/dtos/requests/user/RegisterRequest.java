@@ -19,5 +19,5 @@ public class RegisterRequest {
     private String password;
     private String photo;
     private String banner;
-    private Date birthdate;
+    private String birthdate;
 }

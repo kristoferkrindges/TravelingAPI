@@ -7,10 +7,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.models.FollowerModel;
+import com.kristofer.traveling.models.FollowingModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowerRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -80,6 +82,12 @@ public class FollowerService {
         }else{
             return false;
         }
+    }
+
+    @Transactional
+    public void removeAllFollowersForUser(UserModel user) {
+        List<FollowerModel> followers = followerRepository.findByFollowingOrFollower(user, user);
+        followerRepository.deleteAll(followers);
     }
 
     private FollowerModel findFollower(UserModel follower, UserModel following) {

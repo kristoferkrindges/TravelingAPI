@@ -1,5 +1,6 @@
 package com.kristofer.traveling.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -33,6 +34,13 @@ public class ConfigurationService {
     public ConfigurationModel getAllConfigurationsUser(Long userId){
         return configurationRepository.findByUserId(userId)
             .orElseThrow(()-> new ObjectNotFoundException("Configuration not found!"));
+    }
+
+    public void deletConfigurationUser(Long userId){
+        Optional<ConfigurationModel> configuration = configurationRepository.findByUserId(userId);
+        if(configuration.isPresent()){
+            configurationRepository.deleteById(configuration.get().getId());
+        }
     }
 
     private ConfigurationModel createDataConfiguration(UserModel user){

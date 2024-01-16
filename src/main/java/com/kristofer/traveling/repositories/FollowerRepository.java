@@ -17,4 +17,6 @@ public interface FollowerRepository extends JpaRepository<FollowerModel,  Long> 
 
     @Query("SELECT f FROM FollowerModel f WHERE f.following.id = :userId ORDER BY f.id DESC")
     List<FollowerModel> findByFollowingIdOrderByidDesc(@Param("userId") Long userId);
+
+    List<FollowerModel> findByFollowingOrFollower(UserModel following, UserModel follower);
 }

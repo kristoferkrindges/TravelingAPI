@@ -88,7 +88,7 @@ public class UserController {
 
     @DeleteMapping()
     public ResponseEntity<Void> delete(@RequestHeader("Authorization") String authorizationHeader){
-        userService.delete(authorizationHeader);
+        userInteractionService.delete(authorizationHeader);
         return ResponseEntity.noContent().build();
     }
 

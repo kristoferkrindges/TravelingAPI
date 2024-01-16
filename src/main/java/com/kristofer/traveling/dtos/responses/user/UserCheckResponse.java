@@ -1,6 +1,6 @@
 package com.kristofer.traveling.dtos.responses.user;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.kristofer.traveling.models.UserModel;
 
@@ -20,7 +20,7 @@ public class UserCheckResponse {
     private String at;
     private String photo;
     private String banner;
-    private Date birthdate;
+    private LocalDateTime birthDate;
     private Integer posts;
     private Integer followers;
     private Integer followings;
@@ -35,7 +35,7 @@ public class UserCheckResponse {
         this.at = userModel.getAt();
         this.photo = userModel.getPhoto();
         this.banner = userModel.getBanner();
-        this.birthdate = userModel.getBirthdate();
+        this.birthDate = userModel.getBirthdate();
         this.posts = userModel.getPosts().size();
         this.followers = userModel.getFollowers().size();
         this.followings = userModel.getFollowing().size();
