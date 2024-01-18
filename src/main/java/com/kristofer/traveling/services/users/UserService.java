@@ -4,10 +4,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,11 +17,11 @@ import com.kristofer.traveling.dtos.requests.user.UserUpdateRequest;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.UserRepository;
-import com.kristofer.traveling.services.JwtService;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
 import com.kristofer.traveling.services.exceptions.PasswordsNotSame;
+import com.kristofer.traveling.services.jwt.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,7 +50,7 @@ public class UserService {
         return users;
     }
 
-    public UserModel findById(Long id){
+    public UserModel findById(UUID id){
         Optional<UserModel> obj = userRepository.findById(id);
         return obj.orElseThrow(
             ()-> new ObjectNotFoundException("User with id " + id + " not found"));
@@ -91,20 +90,6 @@ public class UserService {
         return userUpdate;
     }
 
-    // public void delete(String token){
-    //     UserModel user = userByToken(token);
-    //     configurationService.deletConfigurationUser(user.getId());
-    //     followingService.removeAllFollowingsForUser(user);
-    //     notificationService.deletAllNotificationsByUser(user.getId());
-    //     try {
-    //         userRepository.deleteById(user.getId());
-    //     } catch (EmptyResultDataAccessException e) {
-    //         throw new ObjectNotFoundException("User with id " + user.getId() + " not found");
-    //     }catch(DataIntegrityViolationException e){
-    //         throw new DatabaseException(e.getMessage());
-    //     }
-    // }
-
     public void updatePassword(String token, PasswordsRequest obj){
         UserModel user = userByToken(token);
         if(!this.verifyPasswordEncoder(user.getPassword(), obj.getPassword())){
@@ -127,7 +112,6 @@ public class UserService {
     }
 
     private UserModel updateData(UserModel userUpdate, UserUpdateRequest request){
-        // birthDate
         userUpdate.setBirthdate(this.convertStringToDateTime(request.getBirthDate()));
         userUpdate.setAt(request.getAt());
         userUpdate.setFirstname(request.getFirstname());

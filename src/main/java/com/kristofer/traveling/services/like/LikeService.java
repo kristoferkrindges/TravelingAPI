@@ -1,8 +1,9 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.like;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.StorieModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.LikeRepository;
+import com.kristofer.traveling.services.follow.FollowerService;
 import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -136,7 +138,7 @@ public class LikeService {
         likeRepository.deleteAll(likes);
     }
 
-    public List<UserLikePost> findTop3UsersWhoLikedPost(Long postId) {
+    public List<UserLikePost> findTop3UsersWhoLikedPost(UUID postId) {
         List<LikeModel> topLikes = likeRepository.findTop3ByPostIdOrderByCreatedAtAsc(postId);
         List<UserLikePost> topUsersWhoLikedPost = new ArrayList<>();
 
@@ -148,7 +150,7 @@ public class LikeService {
         return topUsersWhoLikedPost;
     }
 
-    public void deleteAllComments(Long commentId){
+    public void deleteAllComments(UUID commentId){
         List<LikeModel> likesForComment = likeRepository.findByCommentId(commentId);
         likeRepository.deleteAll(likesForComment);
     }

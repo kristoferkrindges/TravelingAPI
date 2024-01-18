@@ -1,19 +1,18 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.comment;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.comment.CommentRequest;
 import com.kristofer.traveling.dtos.responses.comment.CommentAllResponse;
-import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.CommentModel;
-import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
@@ -21,6 +20,9 @@ import com.kristofer.traveling.repositories.CommentRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
+import com.kristofer.traveling.services.like.LikeService;
+import com.kristofer.traveling.services.notification.NotificationService;
+import com.kristofer.traveling.services.post.PostService;
 import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class CommentService {
         return commentAllResponse;
     }
 
-    public CommentAllResponse findById(String token, Long id){
+    public CommentAllResponse findById(String token, UUID id){
         CommentModel commentModel = this.findComment(id);
         CommentAllResponse comment = new CommentAllResponse(commentModel);
         return comment;
@@ -54,13 +56,13 @@ public class CommentService {
         return new CommentAllResponse(comment);
     }
 
-    public CommentAllResponse update(String token, CommentRequest request, Long id){
+    public CommentAllResponse update(String token, CommentRequest request, UUID id){
         CommentModel comment = this.updateDataComment(token, request, id);
         commentRepository.save(comment);
         return new CommentAllResponse(comment);
     }
 
-    public String delete(String token, Long id) {
+    public String delete(String token, UUID id) {
         CommentModel commentToDelete = this.verifyCommentExistId(id);
         this.verifyIdUser(token, commentToDelete.getCreator().getId());
     
@@ -75,7 +77,7 @@ public class CommentService {
         return "Delete with success!";
     }
 
-    public List<CommentAllResponse> getPostComments(String token, Long postId){
+    public List<CommentAllResponse> getPostComments(String token, UUID postId){
         postService.findByIdPost(postId);
         List<CommentModel> comments = commentRepository.findByPostId(postId);
         Collections.sort(comments, Comparator.comparing(CommentModel::getDatePublic).reversed());
@@ -85,16 +87,15 @@ public class CommentService {
         return commentAllResponse;
     }
 
-    public List<CommentAllResponse> getChildComment(String token, Long parentCommentId){
+    public List<CommentAllResponse> getChildComment(String token, UUID parentCommentId){
         List<CommentModel> comments = commentRepository.findByParentCommentId(parentCommentId);
-        // Collections.sort(comments, Comparator.comparing(CommentModel::getDatePublic).reversed());
         List<CommentAllResponse> commentAllResponse = comments.stream().map(x-> new CommentAllResponse(
             x, this.pressLike(token, x)))
         .collect(Collectors.toList());
         return commentAllResponse;
     }
 
-    public void toogleLikeComment(String token, Long commentId){
+    public void toogleLikeComment(String token, UUID commentId){
         UserModel user = userService.userByToken(token);
         CommentModel comment = this.verifyCommentExistId(commentId);
         Boolean verify = likeService.toggleLikeComment(user, comment);
@@ -103,7 +104,7 @@ public class CommentService {
         }
     }
 
-    public List<UserAllResponse> getLikedCommentsUser(Long commentId, String token) {
+    public List<UserAllResponse> getLikedCommentsUser(UUID commentId, String token) {
         CommentModel comment = this.verifyCommentExistId(commentId);
         return likeService.getLikedCommentsUser(comment, token);
     }
@@ -127,7 +128,7 @@ public class CommentService {
         return likeService.pressLikeComment(user, comment);
     }
 
-    private CommentModel updateDataComment(String token, CommentRequest request, Long id) {
+    private CommentModel updateDataComment(String token, CommentRequest request, UUID id) {
         CommentModel commentModel = this.verifyCommentExistId(id);
         this.verifyRequestUpdate(request);
         this.verifyIdUser(token, commentModel.getCreator().getId());
@@ -138,14 +139,14 @@ public class CommentService {
         return commentModel;
     }
 
-    private void verifyIdUser(String token, Long id){
+    private void verifyIdUser(String token, UUID id){
         UserModel user = userService.userByToken(token);
         if(user.getId() != id){
             throw new ObjectNotPermission("This user does not have permission to change Post");
         }
     }
 
-    private CommentModel verifyCommentExistId(Long id) {
+    private CommentModel verifyCommentExistId(UUID id) {
         Optional<CommentModel> comment = commentRepository.findById(id);
         return comment.orElseThrow(
             ()-> new ObjectNotFoundException("Comment with id " + id + " not found"));
@@ -197,7 +198,7 @@ public class CommentService {
         }
     }
 
-    private CommentModel findComment(Long id) {
+    private CommentModel findComment(UUID id) {
         Optional<CommentModel> commentModel = commentRepository.findById(id);
         if(!commentModel.isPresent()){
             throw new ObjectNotFoundException("Comment with id " + id + " not found");

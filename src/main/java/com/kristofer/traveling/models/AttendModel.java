@@ -1,6 +1,7 @@
 package com.kristofer.traveling.models;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -27,8 +28,8 @@ import lombok.NoArgsConstructor;
 @Table(name="attend_table")
 public class AttendModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserModel user;

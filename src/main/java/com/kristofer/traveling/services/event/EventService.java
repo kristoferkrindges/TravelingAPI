@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -17,16 +18,15 @@ import com.kristofer.traveling.dtos.requests.event.EventRequest;
 import com.kristofer.traveling.dtos.responses.event.EventResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.EventModel;
-import com.kristofer.traveling.models.LikeModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
 import com.kristofer.traveling.repositories.EventRepository;
-import com.kristofer.traveling.services.FollowerService;
-import com.kristofer.traveling.services.NotificationService;
 import com.kristofer.traveling.services.attend.AttendService;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
+import com.kristofer.traveling.services.follow.FollowerService;
+import com.kristofer.traveling.services.notification.NotificationService;
 import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -84,29 +84,13 @@ public class EventService {
         return eventsResponse;
     }
 
-    public List<UserAllResponse> findUsersEvent(String token, Long eventId){
+    public List<UserAllResponse> findUsersEvent(String token, UUID eventId){
         List<UserModel> users = attendService.findUsersByEventId(eventId);
         UserModel userOwner = userService.userByToken(token);
         List<UserAllResponse> usersAllResponse = users.stream().map(x-> new UserAllResponse(x, followerService.searchFollower(userOwner, x)))
         .collect(Collectors.toList());
         return usersAllResponse;
     }
-
-    // public List<EventResponse> findRandomEvents(String token) {
-    //     List<EventModel> allEvents = eventRepository.findAll();
-
-    //     List<EventResponse> eventsResponse = allEvents.stream().map(x-> new EventResponse(
-    //         x, this.pressAttend(token, x), attendService.findTop3UsersWhoAttendEvent(x.getId())))
-    //     .collect(Collectors.toList());
-        
-    //     Random random = new Random();
-    //     int numberOfRandomEvents = Math.min(2, allEvents.size());
-    //     return random.ints(0, eventsResponse.size())
-    //             .distinct()
-    //             .limit(numberOfRandomEvents)
-    //             .mapToObj(eventsResponse::get)
-    //             .collect(Collectors.toList());
-    // }
 
     public List<EventResponse> findRandomEvents(String token) {
         List<EventModel> allEvents = eventRepository.findAll();
@@ -138,13 +122,13 @@ public class EventService {
         return new EventResponse(event);
     }
 
-    public EventResponse update(String token, EventRequest request, Long id){
+    public EventResponse update(String token, EventRequest request, UUID id){
         EventModel event = this.updateDataEvent(token, request, id);
         eventRepository.save(event);
         return new EventResponse(event);
     }
 
-    public String delete(String token, Long id){
+    public String delete(String token, UUID id){
         EventModel eventModel = this.verifyEventExistId(id);
         this.verifyIdUser(token, eventModel.getCreator().getId());
         attendService.deleteAllAttendEvents(eventModel);
@@ -158,7 +142,7 @@ public class EventService {
         
     }
 
-    public void toogleAttendEvent(String token, Long eventId){
+    public void toogleAttendEvent(String token, UUID eventId){
         UserModel user = userService.userByToken(token);
         EventModel eventModel = this.verifyEventExistId(eventId);
         Boolean verify = attendService.toggleAttend(user, eventModel);
@@ -171,7 +155,7 @@ public class EventService {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
-    private EventModel updateDataEvent(String token, EventRequest request, Long id){
+    private EventModel updateDataEvent(String token, EventRequest request, UUID id){
         EventModel eventModel = this.verifyEventExistId(id);
         this.verifyRequestInsert(request);
         this.verifyIdUser(token, eventModel.getCreator().getId());
@@ -188,14 +172,14 @@ public class EventService {
         return eventModel;
     }
 
-    private void verifyIdUser(String token, Long id){
+    private void verifyIdUser(String token, UUID id){
         UserModel user = userService.userByToken(token);
         if(user.getId() != id){
             throw new ObjectNotPermission("This user does not have permission to change Post");
         }
     }
 
-    private EventModel verifyEventExistId(Long id){
+    private EventModel verifyEventExistId(UUID id){
         Optional<EventModel> event = eventRepository.findById(id);
         return event.orElseThrow(
             ()-> new ObjectNotFoundException("Event with id " + id + " not found"));

@@ -1,7 +1,7 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.configuration;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class ConfigurationService {
         return configurationRepository.save(this.createDataConfiguration(user));
     }
 
-    public void toogleDarkMode(Long userId){
+    public void toogleDarkMode(UUID userId){
         Optional<ConfigurationModel> optionalConfiguration = configurationRepository.findByUserId(userId);
         if(optionalConfiguration.get().isDarkMode()){
             optionalConfiguration.get().setDarkMode(false);
@@ -31,12 +31,12 @@ public class ConfigurationService {
         configurationRepository.save(optionalConfiguration.get());
     }
 
-    public ConfigurationModel getAllConfigurationsUser(Long userId){
+    public ConfigurationModel getAllConfigurationsUser(UUID userId){
         return configurationRepository.findByUserId(userId)
             .orElseThrow(()-> new ObjectNotFoundException("Configuration not found!"));
     }
 
-    public void deletConfigurationUser(Long userId){
+    public void deletConfigurationUser(UUID userId){
         Optional<ConfigurationModel> configuration = configurationRepository.findByUserId(userId);
         if(configuration.isPresent()){
             configurationRepository.deleteById(configuration.get().getId());

@@ -1,6 +1,7 @@
 package com.kristofer.traveling.dtos.responses.storie;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.StorieModel;
@@ -13,7 +14,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class StorieAllResponse {
-    private Long id;
+    private UUID id;
     private String video;
     private Date datepublic;
     private Integer likes;

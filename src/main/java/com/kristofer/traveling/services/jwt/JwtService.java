@@ -1,5 +1,6 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.jwt;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.security.Key;
@@ -16,9 +17,11 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+    @Value("${app.security.jwt.secret-key}")
+    private String SECRET_KEY;
 
-    private static final String SECRET_KEY = "a3904559510ce09199bea8d946e05b771bc51a471fd1fdaee4f1ff56c7f36308";
-    private static final long EXPIRATION_TIME = 7776000000L;
+    @Value("${app.security.jwt.expiration}")
+    private long EXPIRATION_TIME;
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
     }

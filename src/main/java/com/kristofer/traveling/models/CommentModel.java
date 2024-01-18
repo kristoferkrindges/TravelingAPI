@@ -3,6 +3,7 @@ package com.kristofer.traveling.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -33,8 +34,8 @@ import lombok.NoArgsConstructor;
 @Table(name="comment_table")
 public class CommentModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     private String phrase;
     private String img;
     @ManyToOne

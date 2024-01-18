@@ -1,6 +1,7 @@
 package com.kristofer.traveling.models;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -29,15 +30,15 @@ import lombok.NoArgsConstructor;
 @Table(name="notification_table")
 public class NotificationModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @ManyToOne
     @JoinColumn(name="user_id")
     private UserModel user;
     @ManyToOne
     @JoinColumn(name="creator_id")
     private UserModel creator;
-    private Long activityId;
+    private UUID activityId;
     private NotificationTypeEnum type;
     private boolean read;
     @CreationTimestamp

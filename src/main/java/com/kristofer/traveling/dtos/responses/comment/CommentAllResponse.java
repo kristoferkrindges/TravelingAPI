@@ -1,6 +1,7 @@
 package com.kristofer.traveling.dtos.responses.comment;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.CommentModel;
@@ -13,13 +14,13 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CommentAllResponse {
-    private Long id;
+    private UUID id;
     private String phrase;
     private String img;
     private Date datepublic;
     private UserAllResponse userAllResponse;
-    private Long postId;
-    private Long parentComment;
+    private UUID postId;
+    private UUID parentComment;
     private Integer likes;
     private Integer comments;
     private boolean pressLike;

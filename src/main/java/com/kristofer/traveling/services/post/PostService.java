@@ -1,7 +1,8 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.post;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.Collections;
@@ -17,6 +18,8 @@ import com.kristofer.traveling.repositories.PostRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
+import com.kristofer.traveling.services.favorite.FavoriteService;
+import com.kristofer.traveling.services.like.LikeService;
 import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,7 +42,7 @@ public class PostService {
         return postAllResponse;
     }
 
-    public PostAllResponse findById(Long id, String token){
+    public PostAllResponse findById(UUID id, String token){
         PostModel postModel = this.findPost(id);
         PostAllResponse post = new PostAllResponse(
             postModel, this.pressLike(token, postModel), this.pressFavorite(token, postModel), likeService.findTop3UsersWhoLikedPost(id));
@@ -53,22 +56,22 @@ public class PostService {
         return new PostAllResponse(post);
     }
 
-    public PostAllResponse update(String token, PostRequest request, Long id){
+    public PostAllResponse update(String token, PostRequest request, UUID id){
         PostModel post = this.updateDataPost(token, request, id);
         postRepository.save(post);
         return new PostAllResponse(post);
     }
 
-    public PostModel findByIdPost(Long postId){
+    public PostModel findByIdPost(UUID postId){
         return this.findPost(postId);
     }
 
-    public List<UserAllResponse> allLikesPost(Long postId, String token){
+    public List<UserAllResponse> allLikesPost(UUID postId, String token){
         PostModel post = this.findByIdPost(postId);
         return likeService.getLikedPostUsers(post, token);
     }
 
-    public List<UserAllResponse> allFavoritesPost(Long postId, String token){
+    public List<UserAllResponse> allFavoritesPost(UUID postId, String token){
         PostModel post = this.findByIdPost(postId);
         return favoriteService.getFavoritePostUsers(post, token);
     }
@@ -83,7 +86,7 @@ public class PostService {
         return favoriteService.pressFavorite(user, post);
     }
 
-    public List<PostAllResponse> findByUserOwner(Long id, String token) {
+    public List<PostAllResponse> findByUserOwner(UUID id, String token) {
         List<PostModel> posts = postRepository.findByCreatorId(id);
         Collections.sort(posts, Comparator.comparing(PostModel::getDatePublic).reversed());
         List<PostAllResponse> postAllResponse = posts.stream().map(x-> new PostAllResponse(
@@ -92,7 +95,7 @@ public class PostService {
         return postAllResponse;
     }
 
-    private PostModel updateDataPost(String token, PostRequest request, Long id){
+    private PostModel updateDataPost(String token, PostRequest request, UUID id){
         PostModel postModel = this.verifyPostExistId(id);
         this.verifyRequestUpdate(request);
         this.verifyIdUser(token, postModel.getCreator().getId());
@@ -116,7 +119,7 @@ public class PostService {
         return post;
     }
 
-    private PostModel findPost(Long id){
+    private PostModel findPost(UUID id){
         Optional<PostModel> postModel = postRepository.findById(id);
         if(!postModel.isPresent()){
             throw new ObjectNotFoundException("Post with id " + id + " not found");
@@ -124,7 +127,7 @@ public class PostService {
         return postModel.get();
     }
 
-    private void verifyIdUser(String token, Long id){
+    private void verifyIdUser(String token, UUID id){
         UserModel user = userService.userByToken(token);
         if(user.getId() != id){
             throw new ObjectNotPermission("This user does not have permission to change Post");
@@ -137,7 +140,7 @@ public class PostService {
         }
     }
 
-    private PostModel verifyPostExistId(Long id){
+    private PostModel verifyPostExistId(UUID id){
         Optional<PostModel> post = postRepository.findById(id);
         return post.orElseThrow(
             ()-> new ObjectNotFoundException("Post with id " + id + " not found"));
