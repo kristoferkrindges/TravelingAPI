@@ -66,7 +66,7 @@ public class NotificationService {
         return "Read of Success!";
     }
 
-    public UUID countUnreadNotifications(String token) {
+    public Long countUnreadNotifications(String token) {
         return notificationRepository.countByUserIdAndReadFalse(userService.userByToken(token).getId());
     }
 

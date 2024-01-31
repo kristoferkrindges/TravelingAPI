@@ -34,7 +34,7 @@ public class NotificationController {
     }
 
     @GetMapping(value = "/count")
-    public ResponseEntity<UUID> countUnreadNotifications(@RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<Long> countUnreadNotifications(@RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(notificationService.countUnreadNotifications(authorizationHeader));
     }
 
