@@ -2,6 +2,7 @@ package com.kristofer.traveling.dtos.responses.post;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserLikePost;
@@ -15,7 +16,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class PostAllResponse {
-    private Long id;
+    private UUID id;
     private String phrase;
     private String img;
     private Date datepublic;

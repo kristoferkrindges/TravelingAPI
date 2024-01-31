@@ -1,6 +1,7 @@
 package com.kristofer.traveling.models;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -29,8 +30,8 @@ import lombok.NoArgsConstructor;
 @Table(name="configuration_table")
 public class ConfigurationModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="user_id")

@@ -9,11 +9,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.kristofer.traveling.services.ConfigurationService;
-import com.kristofer.traveling.services.JwtService;
+import com.kristofer.traveling.services.configuration.ConfigurationService;
 import com.kristofer.traveling.services.exceptions.ObjectAlreadyExistsException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
+import com.kristofer.traveling.services.jwt.JwtService;
 import com.kristofer.traveling.dtos.requests.user.AuthenticationRequest;
 import com.kristofer.traveling.dtos.requests.user.RegisterRequest;
 import com.kristofer.traveling.dtos.responses.user.AuthenticationResponse;

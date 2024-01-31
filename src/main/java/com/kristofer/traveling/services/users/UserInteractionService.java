@@ -2,8 +2,8 @@ package com.kristofer.traveling.services.users;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,16 +19,16 @@ import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
 import com.kristofer.traveling.repositories.UserRepository;
-import com.kristofer.traveling.services.ConfigurationService;
-import com.kristofer.traveling.services.FavoriteService;
-import com.kristofer.traveling.services.FollowerService;
-import com.kristofer.traveling.services.FollowingService;
-import com.kristofer.traveling.services.LikeService;
-import com.kristofer.traveling.services.NotificationService;
-import com.kristofer.traveling.services.PostService;
+import com.kristofer.traveling.services.configuration.ConfigurationService;
 import com.kristofer.traveling.services.event.EventService;
 import com.kristofer.traveling.services.exceptions.DatabaseException;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
+import com.kristofer.traveling.services.favorite.FavoriteService;
+import com.kristofer.traveling.services.follow.FollowerService;
+import com.kristofer.traveling.services.follow.FollowingService;
+import com.kristofer.traveling.services.like.LikeService;
+import com.kristofer.traveling.services.notification.NotificationService;
+import com.kristofer.traveling.services.post.PostService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,7 +47,7 @@ public class UserInteractionService {
 
     private final UserRepository userRepository;
 
-    public String processFollow(String token, Long followId){
+    public String processFollow(String token, UUID followId){
         UserModel owner = userService.userByToken(token);
         UserModel following = userService.findById(followId);
         if(followerService.FollowOrDelete(owner, following)){
@@ -72,7 +72,7 @@ public class UserInteractionService {
         return userAt;
     }
 
-    public List<UserAllResponse> getFollowingsOfUser(Long id, String token) {
+    public List<UserAllResponse> getFollowingsOfUser(UUID id, String token) {
         UserModel owner = userService.userByToken(token);
         List<UserAllResponse> followers = new ArrayList<>();
 
@@ -82,8 +82,7 @@ public class UserInteractionService {
         return followers;
     }
 
-    // Modify
-    public List<UserAllResponse> getFollowersOfUser(Long id, String token) {
+    public List<UserAllResponse> getFollowersOfUser(UUID id, String token) {
         UserModel owner = userService.userByToken(token);
         List<UserAllResponse> followings = new ArrayList<>();
         for(UserModel user : followingService.getFollowingsUser(id)){
@@ -92,14 +91,14 @@ public class UserInteractionService {
         return followings;
     }
 
-    public void removeFollow(String token, Long followingId){
+    public void removeFollow(String token, UUID followingId){
         UserModel follower = userService.userByToken(token);
         UserModel following = userService.findById(followingId);
         followerService.delete(follower, following);
         followingService.delete(follower, following);
     }
 
-    public void toggleToLike(String token, Long postId){
+    public void toggleToLike(String token, UUID postId){
         UserModel user = userService.userByToken(token);
         PostModel post = postService.findByIdPost(postId);
         Boolean verify = likeService.toggleLike(user, post);
@@ -108,7 +107,7 @@ public class UserInteractionService {
         }
     }
 
-    public void toggleFavorite(String token, Long postId){
+    public void toggleFavorite(String token, UUID postId){
         UserModel user = userService.userByToken(token);
         PostModel post = postService.findByIdPost(postId);
         Boolean verify = favoriteService.toggleFavorite(user, post);
@@ -151,28 +150,6 @@ public class UserInteractionService {
         UserModel user = userService.userByToken(token);
         return configurationService.getAllConfigurationsUser(user.getId());
     }
-
-    // public List<UserAllResponse> findRandomUsersNotFollowing(String token) {
-    //     UserModel userToken = userService.userByToken(token);
-    //     List<UserModel> notFollowingUsers = userService.findAllUserModel().stream()
-    //             .filter(user -> user.getId() != userToken.getId() &&  !followerService.searchFollower(userToken, user))
-    //             .collect(Collectors.toList());
-
-    //     List<UserAllResponse> userAllResponse = notFollowingUsers.stream().map(x-> new UserAllResponse(x))
-    //     .collect(Collectors.toList());
-
-    //     if (notFollowingUsers.size() < 1) {
-    //         return List.of();
-    //     }
-        
-    //     Random random = new Random();
-    //     int numberOfRandomUsers = Math.min(2, notFollowingUsers.size());
-    //     return random.ints(0, userAllResponse.size())
-    //             .distinct()
-    //             .limit(numberOfRandomUsers)
-    //             .mapToObj(userAllResponse::get)
-    //             .collect(Collectors.toList());
-    // }
 
     public List<UserAllResponse> findRandomUsersNotFollowing(String token) {
         UserModel userToken = userService.userByToken(token);

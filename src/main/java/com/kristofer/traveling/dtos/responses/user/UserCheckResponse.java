@@ -1,6 +1,7 @@
 package com.kristofer.traveling.dtos.responses.user;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.kristofer.traveling.models.UserModel;
 
@@ -13,7 +14,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class UserCheckResponse {
-    private Long id;
+    private UUID id;
     private String firstname;
     private String lastname;
     private String email;

@@ -1,6 +1,7 @@
 package com.kristofer.traveling.dtos.responses.notification;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.NotificationModel;
@@ -14,10 +15,10 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class NotificationAllResponse {
-    private Long id;
+    private UUID id;
     private UserAllResponse user;
     private UserAllResponse creator;
-    private Long activityId;
+    private UUID activityId;
     private NotificationTypeEnum type;
     private boolean read;
     private Date time;

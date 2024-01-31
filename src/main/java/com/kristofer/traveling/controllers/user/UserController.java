@@ -1,6 +1,7 @@
 package com.kristofer.traveling.controllers.user;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserAllResponse> findById(@PathVariable Long id){
+    public ResponseEntity<UserAllResponse> findById(@PathVariable UUID id){
         UserModel user = userService.findById(id);
         return ResponseEntity.ok().body(new UserAllResponse(user));
     }
@@ -93,7 +94,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/follow")
-    public ResponseEntity<String> followUser(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<String> followUser(@PathVariable("id") UUID followingId, @RequestHeader("Authorization") String authorizationHeader) {
         userInteractionService.processFollow(authorizationHeader, followingId);
         return ResponseEntity.ok("Successfully followed!");
     }
@@ -104,29 +105,29 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}/followings")
-    public ResponseEntity<List<UserAllResponse>> findFollowersOfUser(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<List<UserAllResponse>> findFollowersOfUser(@PathVariable UUID id, @RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(userInteractionService.getFollowingsOfUser(id, authorizationHeader));
     }
 
     @GetMapping(value = "/{id}/followers")
-    public ResponseEntity<List<UserAllResponse>> findFollowingsUser(@PathVariable Long id, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<List<UserAllResponse>> findFollowingsUser(@PathVariable UUID id, @RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(userInteractionService.getFollowersOfUser(id, authorizationHeader)); 
     }
 
     @PostMapping("/{id}/removefollow")
-    public ResponseEntity<String> removeFollow(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<String> removeFollow(@PathVariable("id") UUID followingId, @RequestHeader("Authorization") String authorizationHeader) {
         userInteractionService.removeFollow(authorizationHeader, followingId);
         return ResponseEntity.ok("Successfully remove Follow!");
     }
 
     @PostMapping("/like/{id}")
-    public ResponseEntity<String> toggleLike(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<String> toggleLike(@PathVariable("id") UUID followingId, @RequestHeader("Authorization") String authorizationHeader){
         userInteractionService.toggleToLike(authorizationHeader, followingId);
         return ResponseEntity.ok("Successfully like post!");
     }
 
     @PostMapping("/favorites/{id}")
-    public ResponseEntity<String> toggleFavorite(@PathVariable("id") Long followingId, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<String> toggleFavorite(@PathVariable("id") UUID followingId, @RequestHeader("Authorization") String authorizationHeader){
         userInteractionService.toggleFavorite(authorizationHeader, followingId);
         return ResponseEntity.ok("Successfully favorite post!");
     }

@@ -1,13 +1,13 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.follow;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.models.FollowerModel;
-import com.kristofer.traveling.models.FollowingModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FollowerRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
@@ -25,7 +25,7 @@ public class FollowerService {
         return followerRepository.findAll();
     }
 
-    public List<UserModel> getFollowersUser(Long userId){
+    public List<UserModel> getFollowersUser(UUID userId){
         List<UserModel> followers = new ArrayList<>();
         List<FollowerModel> followerRelation = followerRepository.findByFollowingIdOrderByidDesc(userId);
         for(FollowerModel followerRelations : followerRelation){

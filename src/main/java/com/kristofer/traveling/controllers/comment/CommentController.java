@@ -1,6 +1,7 @@
 package com.kristofer.traveling.controllers.comment;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kristofer.traveling.dtos.requests.comment.CommentRequest;
 import com.kristofer.traveling.dtos.responses.comment.CommentAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
-import com.kristofer.traveling.services.CommentService;
+import com.kristofer.traveling.services.comment.CommentService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +33,7 @@ public class CommentController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CommentAllResponse> findById(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
+    public ResponseEntity<CommentAllResponse> findById(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id){
         return ResponseEntity.ok().body(commentService.findById(authorizationHeader, id));
     }
 
@@ -42,29 +43,29 @@ public class CommentController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<CommentAllResponse> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id ,@RequestBody CommentRequest request){
+    public ResponseEntity<CommentAllResponse> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id ,@RequestBody CommentRequest request){
         return ResponseEntity.ok().body(commentService.update(authorizationHeader, request, id));
     }
     
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id){
         return ResponseEntity.ok().body(commentService.delete(authorizationHeader, id));
     }
     @GetMapping(value = "/postComments/{id}")
-    public ResponseEntity<List<CommentAllResponse>> postComments(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Long postId){
+    public ResponseEntity<List<CommentAllResponse>> postComments(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") UUID postId){
         return ResponseEntity.ok().body(commentService.getPostComments(authorizationHeader, postId)); 
     }
     @GetMapping(value = "/childComment/{id}")
-    public ResponseEntity<List<CommentAllResponse>> childComment(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") Long postId){
+    public ResponseEntity<List<CommentAllResponse>> childComment(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("id") UUID postId){
         return ResponseEntity.ok().body(commentService.getChildComment(authorizationHeader, postId)); 
     }
     @PostMapping("/like/{id}")
-    public ResponseEntity<String> toggleLike(@PathVariable("id") Long commentId, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<String> toggleLike(@PathVariable("id") UUID commentId, @RequestHeader("Authorization") String authorizationHeader){
         commentService.toogleLikeComment(authorizationHeader, commentId);
         return ResponseEntity.ok("Successfully like comment!");
     }
     @GetMapping(value = "/like/{id}")
-    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") Long commentId, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<List<UserAllResponse>> allLikes(@PathVariable("id") UUID commentId, @RequestHeader("Authorization") String authorizationHeader){
         return ResponseEntity.ok().body(commentService.getLikedCommentsUser(commentId, authorizationHeader)); 
     }
 }

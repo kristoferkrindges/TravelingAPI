@@ -1,4 +1,4 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.favorite;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.models.FavoriteModel;
 import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.repositories.FavoriteRepository;
+import com.kristofer.traveling.services.follow.FollowerService;
 import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;

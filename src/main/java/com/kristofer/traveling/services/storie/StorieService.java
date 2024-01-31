@@ -1,17 +1,15 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.storie;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.kristofer.traveling.dtos.requests.storie.StorieRequest;
-import com.kristofer.traveling.dtos.responses.post.PostAllResponse;
 import com.kristofer.traveling.dtos.responses.storie.StorieAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
-import com.kristofer.traveling.models.CommentModel;
-import com.kristofer.traveling.models.PostModel;
 import com.kristofer.traveling.models.StorieModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
@@ -19,6 +17,8 @@ import com.kristofer.traveling.repositories.StorieRepository;
 import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotNullException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
+import com.kristofer.traveling.services.like.LikeService;
+import com.kristofer.traveling.services.notification.NotificationService;
 import com.kristofer.traveling.services.users.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -54,7 +54,7 @@ public class StorieService {
         return usersAllResponse;
     }
 
-    public void toogleLikeStorie(String token, Long storieId){
+    public void toogleLikeStorie(String token, UUID storieId){
         UserModel user = userService.userByToken(token);
         StorieModel storie = this.verifyStorieExistId(storieId);
         Boolean verify = likeService.toggleLikeStorie(user, storie);
@@ -63,7 +63,7 @@ public class StorieService {
         }
     }
 
-    public StorieAllResponse findById(Long id){
+    public StorieAllResponse findById(UUID id){
         StorieModel storieModel = this.findStorie(id);
         StorieAllResponse storie = new StorieAllResponse(storieModel);
         return storie;
@@ -76,13 +76,13 @@ public class StorieService {
         return new UserAllResponse(user);
     }
 
-    public StorieAllResponse update(String token, StorieRequest request, Long id){
+    public StorieAllResponse update(String token, StorieRequest request, UUID id){
         StorieModel storie = this.updateDataStorie(token, request, id);
         storieRepository.save(storie);
         return new StorieAllResponse(storie);
     }
 
-    public String delete(String token, Long id){
+    public String delete(String token, UUID id){
         StorieModel storieModel = this.findStorie(id);
         this.verifyIdUser(token, storieModel.getCreator().getId());
         this.storieRepository.delete(storieModel);
@@ -94,7 +94,7 @@ public class StorieService {
         return likeService.pressLikeStorie(user, storie);
     }
 
-    private StorieModel updateDataStorie(String token, StorieRequest request, Long id){
+    private StorieModel updateDataStorie(String token, StorieRequest request, UUID id){
         StorieModel storieModel = this.verifyStorieExistId(id);
         this.verifyRequestUpdate(request);
         this.verifyIdUser(token, request.getCreatorId());
@@ -103,14 +103,14 @@ public class StorieService {
         return storieModel;
     }
 
-    private void verifyIdUser(String token, Long id){
+    private void verifyIdUser(String token, UUID id){
         UserModel user = userService.userByToken(token);
         if(user.getId() != id){
             throw new ObjectNotPermission("This user does not have permission to change Storie");
         }
     }
 
-    private StorieModel findStorie(Long id){
+    private StorieModel findStorie(UUID id){
         Optional<StorieModel> storieModel = storieRepository.findById(id);
         if(!storieModel.isPresent()){
             throw new ObjectNotFoundException("Storie with id " + id + " not found");
@@ -118,7 +118,7 @@ public class StorieService {
         return storieModel.get();
     }
 
-    private StorieModel verifyStorieExistId(Long id){
+    private StorieModel verifyStorieExistId(UUID id){
         Optional<StorieModel> storie = storieRepository.findById(id);
         return storie.orElseThrow(
             ()-> new ObjectNotFoundException("Storie with id " + id + " not found"));

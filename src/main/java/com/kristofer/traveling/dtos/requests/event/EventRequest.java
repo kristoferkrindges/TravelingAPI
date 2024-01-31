@@ -1,6 +1,7 @@
 package com.kristofer.traveling.dtos.requests.event;
 
 import java.util.Date;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +22,5 @@ public class EventRequest {
     private String details;
     private String type;
     private String price;
-    private Long creatorId;
+    private UUID creatorId;
 }

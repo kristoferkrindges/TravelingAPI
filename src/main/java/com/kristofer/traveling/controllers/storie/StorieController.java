@@ -1,6 +1,7 @@
 package com.kristofer.traveling.controllers.storie;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kristofer.traveling.dtos.requests.storie.StorieRequest;
 import com.kristofer.traveling.dtos.responses.storie.StorieAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
-import com.kristofer.traveling.services.StorieInteractionService;
-import com.kristofer.traveling.services.StorieService;
+import com.kristofer.traveling.services.storie.StorieInteractionService;
+import com.kristofer.traveling.services.storie.StorieService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +35,7 @@ public class StorieController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<StorieAllResponse> findById(@PathVariable Long id){
+    public ResponseEntity<StorieAllResponse> findById(@PathVariable UUID id){
         return ResponseEntity.ok().body(storieService.findById(id));
     }
 
@@ -53,16 +54,16 @@ public class StorieController {
         return ResponseEntity.ok().body(storieService.insert(authorizationHeader, request));
     }
     @PutMapping(value = "/{id}")
-    public ResponseEntity<StorieAllResponse> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id ,@RequestBody StorieRequest request){
+    public ResponseEntity<StorieAllResponse> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id ,@RequestBody StorieRequest request){
         return ResponseEntity.ok().body(storieService.update(authorizationHeader, request, id));
     }
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id){
         return ResponseEntity.ok().body(storieInteractionService.delete(authorizationHeader, id));
     }
 
     @PostMapping("/like/{id}")
-    public ResponseEntity<String> toggleLike(@PathVariable("id") Long storieId, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<String> toggleLike(@PathVariable("id") UUID storieId, @RequestHeader("Authorization") String authorizationHeader){
         storieService.toogleLikeStorie(authorizationHeader, storieId);
         return ResponseEntity.ok("Successfully like storie!");
     }

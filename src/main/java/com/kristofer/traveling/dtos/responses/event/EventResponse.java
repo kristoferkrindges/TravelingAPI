@@ -3,6 +3,7 @@ package com.kristofer.traveling.dtos.responses.event;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.kristofer.traveling.dtos.responses.user.UserAllResponse;
 import com.kristofer.traveling.dtos.responses.user.UserLikePost;
@@ -16,7 +17,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class EventResponse {
-    private Long id;
+    private UUID id;
     private String name;
     private LocalDateTime eventDate;
     private String city;

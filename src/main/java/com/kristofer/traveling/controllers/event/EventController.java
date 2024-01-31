@@ -1,6 +1,7 @@
 package com.kristofer.traveling.controllers.event;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,7 +53,7 @@ public class EventController {
     }
 
     @GetMapping(value = "/users/{id}")
-    public ResponseEntity<List<UserAllResponse>> findUsersEvent(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
+    public ResponseEntity<List<UserAllResponse>> findUsersEvent(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id){
         return ResponseEntity.ok().body(eventService.findUsersEvent(authorizationHeader, id));
     }
 
@@ -62,18 +63,18 @@ public class EventController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<EventResponse> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id,  @RequestBody EventRequest request){
+    public ResponseEntity<EventResponse> update(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id,  @RequestBody EventRequest request){
         return ResponseEntity.ok().body(eventService.update(authorizationHeader, request, id));
     }
 
     @PostMapping("/toogleAttend/{id}")
-    public ResponseEntity<String> toogleAttendEvent(@PathVariable("id") Long id, @RequestHeader("Authorization") String authorizationHeader){
+    public ResponseEntity<String> toogleAttendEvent(@PathVariable("id") UUID id, @RequestHeader("Authorization") String authorizationHeader){
         eventService.toogleAttendEvent(authorizationHeader, id);
         return ResponseEntity.ok("Successfully attend!");
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable Long id){
+    public ResponseEntity<String> delete(@RequestHeader("Authorization") String authorizationHeader, @PathVariable UUID id){
         return ResponseEntity.ok().body(eventService.delete(authorizationHeader, id));
     }
 

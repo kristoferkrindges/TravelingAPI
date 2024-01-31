@@ -1,6 +1,7 @@
-package com.kristofer.traveling.services;
+package com.kristofer.traveling.services.notification;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import com.kristofer.traveling.models.NotificationModel;
 import com.kristofer.traveling.models.UserModel;
 import com.kristofer.traveling.models.Enums.NotificationTypeEnum;
 import com.kristofer.traveling.repositories.NotificationRepository;
-import com.kristofer.traveling.services.exceptions.ObjectNotFoundException;
 import com.kristofer.traveling.services.exceptions.ObjectNotPermission;
 import com.kristofer.traveling.services.users.UserService;
 
@@ -23,7 +23,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserService userService;
 
-    public void createNotification(UserModel user, NotificationTypeEnum type, UserModel creator, Long activityId){
+    public void createNotification(UserModel user, NotificationTypeEnum type, UserModel creator, UUID activityId){
         if(!(user.getId() == creator.getId())){
             var notification = NotificationModel.builder()
             .user(user)
@@ -50,7 +50,7 @@ public class NotificationService {
     }
 
     public String markNotificationsAsRead(String token, List<NotificationAllResponse> notifications) {
-        List<Long> notificationIds = notifications.stream()
+        List<UUID> notificationIds = notifications.stream()
             .map(NotificationAllResponse::getId)
             .collect(Collectors.toList());
         
@@ -66,16 +66,7 @@ public class NotificationService {
         return "Read of Success!";
     }
 
-    // public String markNotificationAsRead(String token, Long notificationId){
-    //     NotificationModel notification = notificationRepository.findById(notificationId)
-    //         .orElseThrow(() -> new ObjectNotFoundException("Notification with id " + notificationId + " not found"));
-    //     this.verifyIdUser(token, notification.getUser().getId());
-    //     notification.setRead(true);
-    //     notificationRepository.save(notification);
-    //     return "Read of Sucess!";
-    // }
-
-    public long countUnreadNotifications(String token) {
+    public Long countUnreadNotifications(String token) {
         return notificationRepository.countByUserIdAndReadFalse(userService.userByToken(token).getId());
     }
 
@@ -86,7 +77,7 @@ public class NotificationService {
         
     }
 
-    private void verifyIdUser(String token, Long id){
+    private void verifyIdUser(String token, UUID id){
         UserModel user = userService.userByToken(token);
         if(user.getId() != id){
             throw new ObjectNotPermission("This user does not have permission to change Post");

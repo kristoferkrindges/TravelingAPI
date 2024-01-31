@@ -3,6 +3,7 @@ package com.kristofer.traveling.services.attend;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class AttendService {
     private final AttendRepository attendRepository;
 
-    public List<UserModel> findUsersByEventId(Long eventId) {
+    public List<UserModel> findUsersByEventId(UUID eventId) {
         List<AttendModel> attendList = attendRepository.findByEventId(eventId);
         return attendList.stream()
                 .map(AttendModel::getUser)
@@ -56,7 +57,7 @@ public class AttendService {
         }
     }
 
-    public List<UserLikePost> findTop3UsersWhoAttendEvent(Long eventId) {
+    public List<UserLikePost> findTop3UsersWhoAttendEvent(UUID eventId) {
         List<AttendModel> topAttend = attendRepository.findTop3ByEventIdOrderByCreatedAtAsc(eventId);
         List<UserLikePost> topUsersAttend = new ArrayList<>();
         for (AttendModel attend : topAttend) {

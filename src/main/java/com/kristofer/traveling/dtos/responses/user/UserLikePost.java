@@ -1,5 +1,7 @@
 package com.kristofer.traveling.dtos.responses.user;
 
+import java.util.UUID;
+
 import com.kristofer.traveling.models.UserModel;
 
 import lombok.AllArgsConstructor;
@@ -10,7 +12,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class UserLikePost {
-    private Long id;
+    private UUID id;
     private String firstname;
     private String lastname;
     private String at;
