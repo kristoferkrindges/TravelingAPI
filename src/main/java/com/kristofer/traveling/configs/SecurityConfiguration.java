@@ -10,7 +10,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.kristofer.traveling.configs.Filter.CorsOptionsRequestFilter;
 import com.kristofer.traveling.configs.Filter.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -24,30 +23,23 @@ public class SecurityConfiguration {
 
     private final AuthenticationProvider authenticationProvider;
 
-    private final CorsOptionsRequestFilter corsOptionsRequestFilter;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http
-            .csrf()
-            .disable()
-            .authorizeHttpRequests()
-            .requestMatchers("/api/auth/**")
-            .permitAll()
-            .requestMatchers("/api/users/profile/**")
-            .permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/posts/**")
-            .permitAll()
-            .anyRequest()
-            .authenticated()
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf().disable()
+        .cors().and()
+        .authorizeHttpRequests()
+            .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/api/users/profile/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+            .anyRequest().authenticated()
             .and()
-            .sessionManagement()
+        .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        .authenticationProvider(authenticationProvider)
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-        
-    }
+    return http.build();
+}
 }
