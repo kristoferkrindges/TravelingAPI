@@ -18,23 +18,22 @@ import jakarta.servlet.http.HttpServletResponse;
 public class CorsOptionsRequestFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-
-        if (HttpMethod.OPTIONS.name().equals(request.getMethod())) {
-            if (request.getRequestURI().startsWith("/api/")) {
-                response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-                response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-                response.setHeader("Access-Control-Allow-Origin", "https://travelingsocial.vercel.app");
-                response.setHeader("Access-Control-Allow-Credentials", "true");
-                response.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000, https://travelingsocial.vercel.app");
-                response.setHeader("Access-Control-Allow-Credentials", "true");
-                response.setStatus(HttpServletResponse.SC_OK);
-            }
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
+    if (HttpMethod.OPTIONS.name().equals(request.getMethod())) {
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        
+        // Verifique o tipo de solicitação OPTIONS e ajuste o cabeçalho
+        if (request.getRequestURI().startsWith("/api/")) {
+            response.setHeader("Access-Control-Allow-Origin", "https://travelingsocial.vercel.app");
         } else {
-            filterChain.doFilter(request, response);
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         }
+        response.setStatus(HttpServletResponse.SC_OK);
+    } else {
+        filterChain.doFilter(request, response);
     }
+}
 }
