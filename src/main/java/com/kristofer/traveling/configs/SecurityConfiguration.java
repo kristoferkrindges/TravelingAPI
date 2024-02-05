@@ -31,7 +31,6 @@ public class SecurityConfiguration {
         http
             .csrf()
             .disable()
-            .addFilterBefore(corsOptionsRequestFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests()
             .requestMatchers("/api/auth/**")
             .permitAll()
