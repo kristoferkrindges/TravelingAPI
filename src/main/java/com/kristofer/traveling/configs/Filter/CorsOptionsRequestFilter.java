@@ -28,6 +28,14 @@ public class CorsOptionsRequestFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
+            // Adicionando o mapeamento específico para a API
+            if (request.getRequestURI().startsWith("/api/")) {
+                response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000, https://travelingsocial.vercel.app");
+                response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+                response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+                response.setHeader("Access-Control-Allow-Credentials", "true");
+            }
+
             filterChain.doFilter(request, response);
         }
     }
